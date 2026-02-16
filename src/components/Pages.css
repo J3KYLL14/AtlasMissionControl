@@ -1,0 +1,138 @@
+.overview-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    height: 100%;
+}
+
+.overview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem !important;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.archive-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.8rem !important;
+    font-size: 0.8rem !important;
+    border-radius: 6px !important;
+    color: var(--text-muted) !important;
+    transition: var(--transition);
+}
+
+.archive-toggle.active {
+    background: rgba(139, 92, 246, 0.1) !important;
+    color: var(--accent-primary) !important;
+    border-color: rgba(139, 92, 246, 0.3) !important;
+}
+
+.title-group {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.status-indicator-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--success);
+}
+
+.status-dot.online {
+    width: 8px;
+    height: 8px;
+    background: var(--success);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--success);
+}
+
+.sync-info {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.overview-top-widgets {
+    display: flex;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.metrics-widget {
+    flex: 1;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.mini-metric {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.metric-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.metric-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.kanban-main {
+    flex: 1;
+    transition: var(--transition);
+}
+
+.kanban-main.hide-archive .kanban-board {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.kanban-main.show-archive .kanban-board {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.deliverables-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.section-subtitle {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #c2410c;
+    /* Matches Archived title color in screenshot */
+    letter-spacing: 0.05em;
+}
+
+.mini-metric {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.metric-value {
+    color: var(--text-main);
+    font-weight: 600;
+}

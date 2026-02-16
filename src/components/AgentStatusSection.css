@@ -1,0 +1,218 @@
+.agent-status-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem !important;
+    background: #0f0f12 !important;
+    transition: var(--transition);
+}
+
+.agent-status-section.horizontal {
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem 1.5rem !important;
+    gap: 2rem;
+    height: 100px;
+}
+
+.agent-main-info {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.agent-avatar {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    background: #1a1a1f;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-primary);
+    border: 1px solid var(--border);
+}
+
+.status-dot {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 3px solid #0f0f12;
+}
+
+.status-dot.idle {
+    background: var(--success);
+}
+
+.status-dot.busy {
+    background: var(--warning);
+}
+
+.status-dot.offline {
+    background: var(--text-muted);
+}
+
+.agent-details {
+    flex: 1;
+}
+
+.agent-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.agent-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.status-text {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+
+.status-text.idle {
+    color: var(--success);
+}
+
+.agent-message {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.ready-btn {
+    background: #1a1a1f !important;
+    border-color: var(--border) !important;
+    color: var(--text-muted) !important;
+    font-size: 0.8rem !important;
+    padding: 0.5rem 1rem !important;
+}
+
+.sub-agents-accordion {
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+}
+
+.sub-agents-accordion.condensed {
+    border-top: none;
+    padding-top: 0;
+    flex: 1;
+}
+
+.accordion-toggle {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-main);
+    padding: 0.5rem 0;
+    transition: var(--transition);
+}
+
+.accordion-toggle:hover {
+    opacity: 0.8;
+}
+
+.toggle-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.condensed .toggle-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.condensed .accordion-toggle {
+    margin-bottom: 0.5rem;
+    padding: 0;
+    pointer-events: none;
+}
+
+.sub-agents-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-left: 0.5rem;
+    animation: slideDown 0.3s ease-out;
+}
+
+.condensed .sub-agents-list {
+    flex-direction: row;
+    margin-top: 0;
+    padding-left: 0;
+    gap: 0.75rem;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.sub-agent-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    transition: var(--transition);
+}
+
+.condensed .sub-agent-item {
+    padding: 0.4rem 0.6rem;
+    background: var(--glass);
+}
+
+.sub-agent-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #e2e8f0;
+    font-size: 0.85rem;
+}
+
+.sub-agent-status {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.sub-agent-task {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.text-success {
+    color: var(--success);
+}
+
+.text-error {
+    color: var(--error);
+}
+
+.text-muted {
+    color: var(--text-muted);
+}

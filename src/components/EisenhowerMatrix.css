@@ -1,0 +1,254 @@
+.matrix-page {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    height: 100%;
+}
+
+.matrix-container {
+    position: relative;
+    flex: 1;
+    background: var(--bg-card);
+    /* Subtle 40x40 grid background (2.5% intervals) */
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 2.5% 2.5%;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    margin: 1.5rem 0;
+    min-height: 550px;
+    overflow: hidden;
+    box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.4);
+}
+
+/* Center Crosshair Lines */
+.matrix-container::before,
+.matrix-container::after {
+    content: '';
+    position: absolute;
+    background: rgba(255, 255, 255, 0.15);
+    z-index: 5;
+    pointer-events: none;
+}
+
+/* Vertical Line */
+.matrix-container::before {
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+}
+
+/* Horizontal Line */
+.matrix-container::after {
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+}
+
+.matrix-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.quadrant {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.quadrant-info {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.6rem 1rem;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    opacity: 0.4;
+    user-select: none;
+}
+
+/* Quadrant Layout (Grid order: Top-Left, Top-Right, Bottom-Left, Bottom-Right) */
+.q1 {
+    background: rgba(59, 130, 246, 0.04);
+}
+
+/* Top-Left: SCHEDULE (High Imp, Low Urg) */
+.q2 {
+    background: rgba(239, 68, 68, 0.05);
+}
+
+/* Top-Right: DO FIRST (High Imp, High Urg) */
+.q3 {
+    background: rgba(113, 113, 122, 0.03);
+}
+
+/* Bottom-Left: ELIMINATE (Low Imp, Low Urg) */
+.q4 {
+    background: rgba(249, 115, 22, 0.04);
+}
+
+/* Bottom-Right: DELEGATE (Low Imp, High Urg) */
+
+.q2 .quadrant-info {
+    color: var(--error);
+    opacity: 0.6;
+}
+
+.q1 .quadrant-info {
+    color: var(--accent-secondary);
+    opacity: 0.6;
+}
+
+.q4 .quadrant-info {
+    color: var(--inprogress);
+    opacity: 0.6;
+}
+
+/* Axis Labels */
+.axis-label {
+    position: absolute;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 800;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    pointer-events: none;
+    z-index: 10;
+    background: var(--bg-card);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+}
+
+.y-axis-high {
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.y-axis-low {
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.x-axis-high {
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.x-axis-low {
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Task Markers */
+.task-marker {
+    z-index: 20;
+    width: 180px;
+    /* Controlled by React state for absolute edge alignment */
+}
+
+.task-marker.y-only .marker-content {
+    cursor: ns-resize;
+    border-top: 1px dashed rgba(139, 92, 246, 0.3);
+}
+
+.task-marker.y-only::before {
+    content: 'Urgency locked by due date';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.task-marker.y-only:hover::before {
+    opacity: 1;
+}
+
+.marker-content {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    cursor: grab;
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    width: 180px;
+    height: 80px;
+    overflow: hidden;
+}
+
+.marker-content:active {
+    cursor: grabbing;
+    transform: scale(1.05);
+}
+
+.marker-title {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-main);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.marker-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.marker-meta.overdue {
+    color: var(--error);
+    font-weight: 600;
+}
+
+.marker-meta.soon {
+    color: var(--warning);
+    font-weight: 600;
+}
+
+.task-marker.inprogress .marker-content {
+    border-left: 3px solid var(--inprogress);
+}
+
+.task-marker.todo .marker-content {
+    border-left: 3px solid var(--todo);
+}
+
+/* Page Header overrides for this page */
+.page-description {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}

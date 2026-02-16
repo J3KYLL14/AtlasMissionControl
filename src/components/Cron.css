@@ -1,0 +1,164 @@
+.cron-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cron-stats {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.mini-stat {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.mini-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.mini-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.cron-table-container {
+    padding: 0;
+    overflow: hidden;
+}
+
+.cron-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.cron-table th {
+    padding: 1rem 1.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+}
+
+.cron-table td {
+    padding: 1.25rem 1.5rem;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.cron-table tr:last-child td {
+    border-bottom: none;
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.status-indicator.online {
+    background: var(--success);
+    box-shadow: 0 0 8px var(--success);
+}
+
+.status-indicator.offline {
+    background: var(--text-muted);
+}
+
+.job-name-cell {
+    display: flex;
+    flex-direction: column;
+}
+
+.job-name {
+    font-weight: 600;
+}
+
+.job-status-text {
+    font-size: 0.7rem;
+    color: var(--success);
+    text-transform: capitalize;
+}
+
+.cron-code {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-family: monospace;
+    color: var(--accent-secondary);
+}
+
+.time-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+}
+
+.table-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.4rem;
+    border-radius: 6px;
+    transition: var(--transition);
+}
+
+.icon-btn:hover {
+    background: var(--glass-hover);
+    color: var(--text-main);
+}
+
+.icon-btn.delete:hover {
+    color: var(--error);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.reminder-wizard {
+    margin-top: 1rem;
+}
+
+.section-title {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.wizard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.wizard-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    cursor: pointer;
+}
+
+.wizard-card:hover {
+    background: var(--glass-hover);
+    border-color: var(--accent-primary);
+}
+
+.wizard-icon {
+    font-size: 1.5rem;
+}
