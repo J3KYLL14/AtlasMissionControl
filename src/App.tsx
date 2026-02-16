@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Sidebar from './components/Sidebar'
 import Overview from './components/Overview'
 import EisenhowerMatrix from './components/EisenhowerMatrix'
@@ -7,14 +7,38 @@ import Inbox from './components/Inbox'
 import Cron from './components/Cron'
 import './App.css'
 
-import { mockKanbanTasks } from './services/mockData'
 import type { KanbanTask } from './services/mockData'
 
 import Settings from './components/Settings'
 
 function App() {
   const [activePage, setActivePage] = useState('overview')
-  const [tasks, setTasks] = useState<KanbanTask[]>(mockKanbanTasks)
+  const [tasks, setTasks] = useState<KanbanTask[]>([])
+  const [loading, setLoading] = useState(true)
+
+  // Fetch tasks on mount
+  useEffect(() => {
+    fetch('/api/tasks')
+      .then(res => res.json())
+      .then(data => {
+        setTasks(data)
+        setLoading(false)
+      })
+      .catch(err => {
+        console.error('Failed to fetch tasks:', err)
+        setLoading(false)
+      })
+  }, [])
+
+  // Save tasks whenever they change
+  useEffect(() => {
+    if (loading) return
+    fetch('/api/tasks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(tasks)
+    }).catch(err => console.error('Failed to save tasks:', err))
+  }, [tasks, loading])
 
   const handleTaskAdd = (newTask: KanbanTask) => {
     setTasks(prev => [newTask, ...prev])
@@ -77,7 +101,14 @@ function App() {
             <span>Gateway Online</span>
           </div>
         </header>
-        {renderPage()}
+        {loading ? (
+          <div className="loading-screen">
+            <div className="loader"></div>
+            <p>Initializing Mission Control...</p>
+          </div>
+        ) : (
+          renderPage()
+        )}
       </main>
     </div>
   )

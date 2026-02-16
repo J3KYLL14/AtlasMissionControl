@@ -44,6 +44,27 @@ npm run preview
 
 ---
 
+## 🐳 Docker (Deployment & Agent-Ready Dev)
+
+For a robust environment where an agent can interact with and modify the code live, use Docker Compose.
+
+### 1. Development Mode (Live HMR)
+This mode mounts your local code into the container. Any change made by you **or an agent** will trigger an instant Hot Module Replacement (HMR) without restarting the container.
+
+```bash
+docker-compose up --build
+```
+
+The app will be live at:  
+👉 **[http://localhost:5173](http://localhost:5173)**
+
+### 2. Why this works for Agents
+- **Shared Volume**: The container shares the `.` root with your host. If an agent (running in its own container or on the host) edits `src/App.tsx`, the web server inside Docker sees it instantly.
+- **Polling**: Configured in `vite.config.ts` to ensure filesystem events are caught inside the Linux container even if the host is macOS/Windows.
+- **Networking**: The app listens on `0.0.0.0:5173`, allowing other containers to reach it via `http://mission-control:5173`.
+
+---
+
 ## 🧪 Testing & Verification
 
 Since the project uses a component-driven architecture, verify the following sections once the app is running:
