@@ -5,20 +5,33 @@ import { AlertCircle, Clock, CheckCircle2, Zap, Calendar, Plus } from 'lucide-re
 import TaskModal from './TaskModal';
 import AddTaskModal from './AddTaskModal';
 import './EisenhowerMatrix.css';
+import { useData } from '../contexts/DataContext';
+import { api } from '../services/api';
 
-interface EisenhowerMatrixProps {
-    tasks: KanbanTask[];
-    onTaskUpdate: (task: KanbanTask) => void;
-    onTaskDelete: (taskId: string) => void;
-    onTaskAdd: (task: KanbanTask) => void;
-}
-
-const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ tasks, onTaskUpdate, onTaskDelete, onTaskAdd }) => {
+const EisenhowerMatrix: React.FC = () => {
+    const { tasks, refreshData } = useData();
     const activeTasks = tasks.filter(t => t.status === 'todo' || t.status === 'inprogress');
     const containerRef = useRef<HTMLDivElement>(null);
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
     const [activeTask, setActiveTask] = useState<KanbanTask | null>(null);
     const [showAddModal, setShowAddModal] = useState(false);
+
+    const handleTaskUpdate = async (task: KanbanTask) => {
+        await api.updateTask(task);
+        refreshData();
+    };
+
+    const handleTaskDelete = async (taskId: string) => {
+        await api.deleteTask(taskId);
+        setActiveTask(null);
+        refreshData();
+    };
+
+    const handleTaskAdd = async (task: KanbanTask) => {
+        await api.createTask(task);
+        setShowAddModal(false);
+        refreshData();
+    };
 
     useEffect(() => {
         if (!containerRef.current) return;
@@ -96,7 +109,7 @@ const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ tasks, onTaskUpdate
             if (!task.dueDate) {
                 updatedTask.urgency = xScore;
             }
-            onTaskUpdate(updatedTask);
+            handleTaskUpdate(updatedTask);
         }
     };
 
@@ -194,15 +207,15 @@ const EisenhowerMatrix: React.FC<EisenhowerMatrixProps> = ({ tasks, onTaskUpdate
                 <TaskModal
                     task={activeTask}
                     onClose={() => setActiveTask(null)}
-                    onSave={onTaskUpdate}
-                    onDelete={onTaskDelete}
+                    onSave={handleTaskUpdate}
+                    onDelete={handleTaskDelete}
                 />
             )}
 
             {showAddModal && (
                 <AddTaskModal
                     onClose={() => setShowAddModal(false)}
-                    onSave={onTaskAdd}
+                    onSave={handleTaskAdd}
                 />
             )}
         </div>

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { mockAgentStatus } from '../services/mockData';
 import type { KanbanTask } from '../services/mockData';
 import './Pages.css';
 import KanbanBoard from './KanbanBoard';
@@ -7,18 +6,31 @@ import AgentStatusSection from './AgentStatusSection';
 import { Archive, ArchiveRestore, Plus } from 'lucide-react';
 import TaskModal from './TaskModal';
 import AddTaskModal from './AddTaskModal';
+import { useData } from '../contexts/DataContext';
+import { api } from '../services/api';
 
-interface OverviewProps {
-    tasks: KanbanTask[];
-    onTaskUpdate: (task: KanbanTask) => void;
-    onTaskDelete: (taskId: string) => void;
-    onTaskAdd: (task: KanbanTask) => void;
-}
-
-const Overview: React.FC<OverviewProps> = ({ tasks, onTaskUpdate, onTaskDelete, onTaskAdd }) => {
+const Overview: React.FC = () => {
+    const { tasks, agentStatus, metrics, refreshData } = useData();
     const [showArchive, setShowArchive] = useState(false);
     const [activeTask, setActiveTask] = useState<KanbanTask | null>(null);
     const [showAddModal, setShowAddModal] = useState(false);
+
+    const handleTaskUpdate = async (task: KanbanTask) => {
+        await api.updateTask(task);
+        refreshData();
+    };
+
+    const handleTaskDelete = async (taskId: string) => {
+        await api.deleteTask(taskId);
+        setActiveTask(null);
+        refreshData();
+    };
+
+    const handleTaskAdd = async (task: KanbanTask) => {
+        await api.createTask(task);
+        setShowAddModal(false);
+        refreshData();
+    };
 
     return (
         <div className="overview-container">
@@ -26,8 +38,8 @@ const Overview: React.FC<OverviewProps> = ({ tasks, onTaskUpdate, onTaskDelete, 
                 <div className="title-group">
                     <h2 className="page-title">Mission Control Board</h2>
                     <div className="status-indicator-group">
-                        <div className="status-dot online"></div>
-                        <span className="status-label">Online</span>
+                        <div className={`status-dot ${agentStatus?.status === 'idle' || agentStatus?.status === 'busy' ? 'online' : 'offline'}`}></div>
+                        <span className="status-label">{agentStatus?.status === 'offline' ? 'Offline' : 'Online'}</span>
                     </div>
                 </div>
                 <div className="header-actions">
@@ -51,22 +63,22 @@ const Overview: React.FC<OverviewProps> = ({ tasks, onTaskUpdate, onTaskDelete, 
             </header>
 
             <div className="overview-top-widgets">
-                <AgentStatusSection agent={mockAgentStatus} horizontal />
+                {agentStatus && <AgentStatusSection agent={agentStatus} horizontal />}
 
                 <div className="deliverables-section glass-card metrics-widget">
                     <h4 className="section-subtitle">Core Metrics</h4>
                     <div className="metrics-grid">
                         <div className="mini-metric">
                             <span className="metric-label">Avg Task Time</span>
-                            <span className="metric-value">4.2m</span>
+                            <span className="metric-value">{metrics?.avgTaskTime || '--'}</span>
                         </div>
                         <div className="mini-metric">
                             <span className="metric-label">Success Rate</span>
-                            <span className="metric-value">98.5%</span>
+                            <span className="metric-value">{metrics?.successRate || '--'}</span>
                         </div>
                         <div className="mini-metric">
                             <span className="metric-label">Active Agents</span>
-                            <span className="metric-value">12</span>
+                            <span className="metric-value">{metrics?.activeAgents || 0}</span>
                         </div>
                     </div>
                 </div>
@@ -84,15 +96,15 @@ const Overview: React.FC<OverviewProps> = ({ tasks, onTaskUpdate, onTaskDelete, 
                 <TaskModal
                     task={activeTask}
                     onClose={() => setActiveTask(null)}
-                    onSave={onTaskUpdate}
-                    onDelete={onTaskDelete}
+                    onSave={handleTaskUpdate}
+                    onDelete={handleTaskDelete}
                 />
             )}
 
             {showAddModal && (
                 <AddTaskModal
                     onClose={() => setShowAddModal(false)}
-                    onSave={onTaskAdd}
+                    onSave={handleTaskAdd}
                 />
             )}
         </div>

@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { useData } from './contexts/DataContext'
 import Sidebar from './components/Sidebar'
 import Overview from './components/Overview'
 import EisenhowerMatrix from './components/EisenhowerMatrix'
@@ -7,67 +8,18 @@ import Inbox from './components/Inbox'
 import Cron from './components/Cron'
 import './App.css'
 
-import type { KanbanTask } from './services/mockData'
-
 import Settings from './components/Settings'
 
 function App() {
   const [activePage, setActivePage] = useState('overview')
-  const [tasks, setTasks] = useState<KanbanTask[]>([])
-  const [loading, setLoading] = useState(true)
-
-  // Fetch tasks on mount
-  useEffect(() => {
-    fetch('/api/tasks')
-      .then(res => res.json())
-      .then(data => {
-        setTasks(data)
-        setLoading(false)
-      })
-      .catch(err => {
-        console.error('Failed to fetch tasks:', err)
-        setLoading(false)
-      })
-  }, [])
-
-  // Save tasks whenever they change
-  useEffect(() => {
-    if (loading) return
-    fetch('/api/tasks', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(tasks)
-    }).catch(err => console.error('Failed to save tasks:', err))
-  }, [tasks, loading])
-
-  const handleTaskAdd = (newTask: KanbanTask) => {
-    setTasks(prev => [newTask, ...prev])
-  }
-
-  const handleTaskUpdate = (updatedTask: KanbanTask) => {
-    setTasks(prev => prev.map(t => t.id === updatedTask.id ? updatedTask : t))
-  }
-
-  const handleTaskDelete = (taskId: string) => {
-    setTasks(prev => prev.filter(t => t.id !== taskId))
-  }
+  const { loading } = useData()
 
   const renderPage = () => {
     switch (activePage) {
       case 'overview':
-        return <Overview
-          tasks={tasks}
-          onTaskUpdate={handleTaskUpdate}
-          onTaskDelete={handleTaskDelete}
-          onTaskAdd={handleTaskAdd}
-        />
+        return <Overview />
       case 'matrix':
-        return <EisenhowerMatrix
-          tasks={tasks}
-          onTaskUpdate={handleTaskUpdate}
-          onTaskDelete={handleTaskDelete}
-          onTaskAdd={handleTaskAdd}
-        />
+        return <EisenhowerMatrix />
       case 'channels':
         return <Channels />
       case 'inbox':
@@ -79,12 +31,7 @@ function App() {
       case 'runbooks':
         return <div className="placeholder">Runbooks (Coming Soon)</div>
       default:
-        return <Overview
-          tasks={tasks}
-          onTaskUpdate={handleTaskUpdate}
-          onTaskDelete={handleTaskDelete}
-          onTaskAdd={handleTaskAdd}
-        />
+        return <Overview />
     }
   }
 

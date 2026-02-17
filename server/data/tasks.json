@@ -1,0 +1,60 @@
+[
+  {
+    "id": "t1",
+    "title": "Fix PDF page breaks",
+    "date": "Jan 27, 2026",
+    "status": "todo",
+    "importance": 80,
+    "urgency": 40,
+    "dueDate": "2026-02-20T17:00:00Z",
+    "estimatedHours": 4
+  },
+  {
+    "id": "t2",
+    "title": "Add charts to reports",
+    "date": "Jan 27, 2026",
+    "status": "todo",
+    "importance": 24,
+    "urgency": 30,
+    "estimatedHours": 6
+  },
+  {
+    "id": "t3",
+    "title": "X API monitoring access",
+    "date": "Jan 27, 2026",
+    "status": "todo",
+    "importance": 87.5,
+    "urgency": 50,
+    "estimatedHours": 2,
+    "dueDate": "2026-12-22T13:00"
+  },
+  {
+    "id": "t4",
+    "title": "X expert monitoring role",
+    "date": "Jan 27, 2026",
+    "status": "inprogress",
+    "importance": 80,
+    "urgency": 85,
+    "dueDate": "2026-02-17T09:00:00Z",
+    "estimatedHours": 12
+  },
+  {
+    "id": "t5",
+    "title": "Metrics tracking system",
+    "date": "Jan 27, 2026",
+    "status": "inprogress",
+    "importance": 40,
+    "urgency": 20,
+    "estimatedHours": 8,
+    "dueDate": "2026-12-12T13:00"
+  },
+  {
+    "id": "t9",
+    "title": "Overdue infrastructure patch",
+    "date": "Feb 10, 2026",
+    "status": "inprogress",
+    "importance": 95,
+    "urgency": 50,
+    "dueDate": "2026-02-10T12:00:00Z"
+  }
+]

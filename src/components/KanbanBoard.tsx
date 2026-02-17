@@ -42,7 +42,12 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks, onTaskClick, showArchi
                                     <p className="task-title">{task.title}</p>
                                     <div className="task-footer">
                                         <Calendar size={12} />
-                                        <span className="task-date">{task.date}</span>
+                                        <span className={`task-date ${!task.dueDate ? 'no-deadline' : ''}`}>
+                                            {task.dueDate
+                                                ? new Date(task.dueDate).toLocaleDateString()
+                                                : "No Deadline Set"
+                                            }
+                                        </span>
                                     </div>
                                 </div>
                             ))}
