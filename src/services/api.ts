@@ -40,4 +40,15 @@ export const api = {
     createSubAgent: (agent: any) => fetch('/api/subAgents', { method: 'POST', headers, body: JSON.stringify(agent) }).then(handleResponse),
     updateSubAgent: (agent: any) => fetch('/api/subAgents', { method: 'PUT', headers, body: JSON.stringify(agent) }).then(handleResponse),
     deleteSubAgent: (id: string) => fetch(`/api/subAgents?id=${id}`, { method: 'DELETE', headers }).then(handleResponse),
+
+    // Skills
+    getSkills: () => fetch('/api/skills', { headers }).then(handleResponse),
+    createSkill: (skill: any) => fetch('/api/skills', { method: 'POST', headers, body: JSON.stringify(skill) }).then(handleResponse),
+    updateSkill: (skill: any) => fetch('/api/skills', { method: 'PUT', headers, body: JSON.stringify(skill) }).then(handleResponse),
+    deleteSkill: (id: string) => fetch(`/api/skills?id=${id}`, { method: 'DELETE', headers }).then(handleResponse),
+
+    // Reminders
+    getReminders: () => fetch('/api/reminders', { headers }).then(handleResponse),
+    createReminder: (reminder: any) => fetch('/api/reminders', { method: 'POST', headers, body: JSON.stringify(reminder) }).then(handleResponse),
+    deleteReminder: (id: string) => fetch(`/api/reminders?id=${id}`, { method: 'DELETE', headers }).then(handleResponse),
 };

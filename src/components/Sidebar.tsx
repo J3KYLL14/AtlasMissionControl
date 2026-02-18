@@ -11,9 +11,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
     const navItems = [
         { id: 'overview', name: 'Overview', icon: LayoutDashboard },
         { id: 'matrix', name: 'Matrix', icon: LayoutGrid },
-        { id: 'channels', name: 'Channels', icon: Radio },
-        { id: 'inbox', name: 'Inbox', icon: MessageSquare },
         { id: 'cron', name: 'Cron & Reminders', icon: Clock },
+        { id: 'inbox', name: 'Inbox', icon: MessageSquare },
+        { id: 'subagents', name: 'Sub Agents', icon: Zap },
+        { id: 'skills', name: 'Skills', icon: Radio },
+        { id: 'channels', name: 'Channels', icon: Radio },
         { id: 'runbooks', name: 'Runbooks', icon: Zap },
         { id: 'logs', name: 'Audit Logs', icon: History },
         { id: 'settings', name: 'Settings', icon: Settings },
@@ -21,19 +23,10 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
 
     return (
         <div className="sidebar">
-            <div className="sidebar-header">
-                <div className="logo-container">
-                    <div className="logo-icon">
-                        <Zap size={24} fill="var(--accent-primary)" stroke="var(--accent-primary)" />
-                    </div>
-                    <h1 className="logo-text">Mission Control</h1>
-                </div>
-            </div>
-
             <div className="sidebar-agent-section">
                 <div className="agent-profile">
                     <div className="agent-avatar-large">
-                        <span className="avatar-emoji">🔱</span>
+                        <span className="avatar-emoji">🧪</span>
                         <div className="status-dot-inner idle"></div>
                     </div>
                     <div className="agent-profile-info">

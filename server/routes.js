@@ -1,7 +1,7 @@
 
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { readData, writeData } from './store.js';
+import { readData, writeData, readSkills, writeSkill, deleteSkill } from './store.js';
 import { authenticate } from './auth.js';
 
 const router = express.Router();
@@ -164,6 +164,77 @@ export const createRoutes = (broadcast) => {
             res.json({ message: 'Sub-agent deleted' });
         } else {
             res.status(404).json({ error: 'Sub-agent not found' });
+        }
+    });
+
+    // --- Skills API ---
+    router.get('/skills', authenticate, (req, res) => {
+        const skills = readSkills();
+        res.json(skills);
+    });
+
+    router.post('/skills', authenticate, (req, res) => {
+        const newSkill = writeSkill(req.body);
+        if (newSkill) {
+            const skills = readSkills();
+            broadcast('skills_update', skills);
+            res.status(201).json(newSkill);
+        } else {
+            res.status(500).json({ error: 'Failed to create skill' });
+        }
+    });
+
+    router.put('/skills', authenticate, (req, res) => {
+        const updatedSkill = writeSkill(req.body);
+        if (updatedSkill) {
+            const skills = readSkills();
+            broadcast('skills_update', skills);
+            res.json(updatedSkill);
+        } else {
+            res.status(500).json({ error: 'Failed to update skill' });
+        }
+    });
+
+    router.delete('/skills', authenticate, (req, res) => {
+        const { id } = req.query;
+        if (deleteSkill(id)) {
+            const skills = readSkills();
+            broadcast('skills_update', skills);
+            res.json({ message: 'Skill deleted' });
+        } else {
+            res.status(404).json({ error: 'Skill not found' });
+        }
+    });
+    // --- Reminders API ---
+    router.get('/reminders', authenticate, (req, res) => {
+        const reminders = readData('reminders');
+        res.json(reminders);
+    });
+
+    router.post('/reminders', authenticate, (req, res) => {
+        const newReminder = {
+            id: uuidv4(),
+            createdAt: new Date().toISOString(),
+            ...req.body
+        };
+        const reminders = readData('reminders');
+        reminders.push(newReminder);
+        writeData('reminders', reminders);
+        broadcast('reminders_update', reminders);
+        res.status(201).json(newReminder);
+    });
+
+    router.delete('/reminders', authenticate, (req, res) => {
+        const { id } = req.query;
+        let reminders = readData('reminders');
+        const initialLength = reminders.length;
+        reminders = reminders.filter(r => r.id !== id);
+        if (reminders.length !== initialLength) {
+            writeData('reminders', reminders);
+            broadcast('reminders_update', reminders);
+            res.json({ message: 'Reminder deleted' });
+        } else {
+            res.status(404).json({ error: 'Reminder not found' });
         }
     });
 

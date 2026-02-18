@@ -73,9 +73,9 @@
 }
 
 .nav-item.active {
-    background: rgba(139, 92, 246, 0.08);
+    background: rgba(20, 184, 166, 0.08);
     color: var(--text-main);
-    border: 1px solid rgba(139, 92, 246, 0.15);
+    border: 1px solid rgba(20, 184, 166, 0.15);
 }
 
 .nav-icon {
@@ -93,7 +93,7 @@
 }
 
 .sidebar-agent-section {
-    padding: 0 1rem 2rem 1rem;
+    padding: 2.5rem 1rem 2rem 1rem;
     border-bottom: 1px solid var(--border);
 }
 
@@ -129,7 +129,23 @@
 }
 
 .status-dot-inner.idle {
-    background: var(--success);
+    background: var(--status-idle);
+}
+
+.status-dot-inner.working {
+    background: var(--status-working);
+}
+
+.status-dot-inner.blocked {
+    background: var(--status-blocked);
+}
+
+.status-dot-inner.awaiting {
+    background: var(--status-awaiting);
+}
+
+.status-dot-inner.disconnected {
+    background: var(--status-disconnected);
 }
 
 .agent-profile-info {

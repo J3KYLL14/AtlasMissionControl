@@ -34,51 +34,46 @@ const Overview: React.FC = () => {
 
     return (
         <div className="overview-container">
-            <header className="page-header overview-header">
-                <div className="title-group">
-                    <h2 className="page-title">Mission Control Board</h2>
-                    <div className="status-indicator-group">
-                        <div className={`status-dot ${agentStatus?.status === 'idle' || agentStatus?.status === 'busy' ? 'online' : 'offline'}`}></div>
-                        <span className="status-label">{agentStatus?.status === 'offline' ? 'Offline' : 'Online'}</span>
-                    </div>
+            <div className="overview-top-row">
+                <div className="overview-top-left">
+                    {agentStatus && <AgentStatusSection agent={agentStatus} />}
                 </div>
-                <div className="header-actions">
-                    <button
-                        className="btn btn-primary"
-                        onClick={() => setShowAddModal(true)}
-                    >
-                        <Plus size={18} /> Add Task
-                    </button>
-                    <button
-                        className={`btn btn-secondary archive-toggle ${showArchive ? 'active' : ''}`}
-                        onClick={() => setShowArchive(!showArchive)}
-                    >
-                        {showArchive ? <ArchiveRestore size={18} /> : <Archive size={18} />}
-                        {showArchive ? 'Hide Archive' : 'Show Archive'}
-                    </button>
-                    <div className="sync-info">
-                        <span className="sync-time">Last sync: {new Date().toLocaleTimeString()}</span>
-                    </div>
-                </div>
-            </header>
-
-            <div className="overview-top-widgets">
-                {agentStatus && <AgentStatusSection agent={agentStatus} horizontal />}
-
-                <div className="deliverables-section glass-card metrics-widget">
-                    <h4 className="section-subtitle">Core Metrics</h4>
-                    <div className="metrics-grid">
-                        <div className="mini-metric">
-                            <span className="metric-label">Avg Task Time</span>
-                            <span className="metric-value">{metrics?.avgTaskTime || '--'}</span>
+                <div className="overview-top-right">
+                    <header className="page-header overview-header">
+                        <div className="header-actions">
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => setShowAddModal(true)}
+                            >
+                                <Plus size={18} /> Add Task
+                            </button>
+                            <button
+                                className={`btn btn-secondary archive-toggle ${showArchive ? 'active' : ''}`}
+                                onClick={() => setShowArchive(!showArchive)}
+                            >
+                                {showArchive ? <ArchiveRestore size={18} /> : <Archive size={18} />}
+                                {showArchive ? 'Hide Archive' : 'Show Archive'}
+                            </button>
+                            <div className="sync-info">
+                                <span className="sync-time">Last sync: {new Date().toLocaleTimeString()}</span>
+                            </div>
                         </div>
-                        <div className="mini-metric">
-                            <span className="metric-label">Success Rate</span>
-                            <span className="metric-value">{metrics?.successRate || '--'}</span>
-                        </div>
-                        <div className="mini-metric">
-                            <span className="metric-label">Active Agents</span>
-                            <span className="metric-value">{metrics?.activeAgents || 0}</span>
+                    </header>
+
+                    <div className="deliverables-section glass-card metrics-widget">
+                        <div className="metrics-grid">
+                            <div className="mini-metric">
+                                <span className="metric-label">Avg Task Time</span>
+                                <span className="metric-value">{metrics?.avgTaskTime || '--'}</span>
+                            </div>
+                            <div className="mini-metric">
+                                <span className="metric-label">Success Rate</span>
+                                <span className="metric-value">{metrics?.successRate || '--'}</span>
+                            </div>
+                            <div className="mini-metric">
+                                <span className="metric-label">Active Agents</span>
+                                <span className="metric-value">{metrics?.activeAgents || 0}</span>
+                            </div>
                         </div>
                     </div>
                 </div>

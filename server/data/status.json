@@ -1,6 +1,6 @@
 {
-  "name": "Mission Control Agent",
-  "status": "idle",
-  "message": "System online",
+  "name": "Atlas",
+  "status": "working",
+  "message": "Analyzing mission parameters...",
   "subAgents": []
 }

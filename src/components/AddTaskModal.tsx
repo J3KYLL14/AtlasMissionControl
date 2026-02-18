@@ -16,7 +16,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ onClose, onSave }) => {
     const [dueDate, setDueDate] = useState('');
     const [hasDueDate, setHasDueDate] = useState(false);
     const [description, setDescription] = useState('');
-    const [agentInstructions, setAgentInstructions] = useState('');
+    const [implementationPlan, setImplementationPlan] = useState('This is an implementation plan developed similar to those for coding projects. Step-by-step instructions to completion: \n\n1. ');
 
     const handleSave = () => {
         if (!title.trim()) return;
@@ -30,7 +30,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ onClose, onSave }) => {
             urgency,
             dueDate: hasDueDate ? new Date(dueDate).toISOString() : undefined,
             description,
-            agentInstructions,
+            implementationPlan,
             estimatedHours: 4
         };
 
@@ -115,13 +115,13 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ onClose, onSave }) => {
                     </div>
 
                     <div className="form-group agent-box">
-                        <label><MessageSquare size={14} /> Agent Instructions</label>
+                        <label><MessageSquare size={14} /> Implementation Plan</label>
                         <textarea
-                            value={agentInstructions}
-                            onChange={e => setAgentInstructions(e.target.value)}
-                            placeholder="Atlas, please handle this by..."
+                            value={implementationPlan}
+                            onChange={e => setImplementationPlan(e.target.value)}
+                            placeholder="Write step-by-step instructions to completion..."
                             className="form-textarea agent-textarea"
-                            rows={3}
+                            rows={5}
                         />
                     </div>
 

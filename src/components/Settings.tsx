@@ -10,7 +10,7 @@ const Settings: React.FC = () => {
         <div className="page-container">
             <header className="page-header">
                 <h2 className="page-title">Settings</h2>
-                <p className="page-subtitle">Configure your Mission Control environment and Agent preferences.</p>
+                <p className="page-subtitle">Configure your Atlas environment and Agent preferences.</p>
             </header>
 
             <div className="settings-grid">
@@ -91,7 +91,7 @@ const Settings: React.FC = () => {
                     <div className="settings-content">
                         <div className="form-group">
                             <label>Gateway URL</label>
-                            <input type="text" className="form-input" defaultValue="https://gateway.missioncontrol.io" />
+                            <input type="text" className="form-input" defaultValue="https://gateway.atlas.io" />
                         </div>
                         <div className="checkbox-row">
                             <label className="checkbox-group">

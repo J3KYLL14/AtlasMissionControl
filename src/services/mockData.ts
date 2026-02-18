@@ -38,7 +38,7 @@ export interface KanbanTask {
   id: string;
   title: string;
   description?: string;
-  agentInstructions?: string;
+  implementationPlan?: string;
   date: string;
   status: 'todo' | 'inprogress' | 'done' | 'archived';
   importance: number; // 0-100
@@ -50,13 +50,18 @@ export interface KanbanTask {
 export interface SubAgent {
   id: string;
   name: string;
+  role: string;
   status: 'active' | 'idle' | 'error';
+  skills: string[];
   task?: string;
+  model?: string;
+  maxSpawnDepth?: number;
+  soul?: string;
 }
 
 export interface AgentStatus {
   name: string;
-  status: 'idle' | 'busy' | 'offline';
+  status: 'idle' | 'working' | 'blocked' | 'awaiting' | 'disconnected';
   message: string;
   subAgents: SubAgent[];
 }
@@ -159,12 +164,12 @@ export const mockKanbanTasks: KanbanTask[] = [
 ];
 
 export const mockAgentStatus: AgentStatus = {
-  name: 'OpenClaw Agent',
-  status: 'idle',
-  message: 'Ready for tasks',
+  name: 'Atlas',
+  status: 'working',
+  message: 'Analyzing mission parameters...',
   subAgents: [
-    { id: 'sa1', name: 'Scraper-01', status: 'active', task: 'Monitoring X feeds' },
-    { id: 'sa2', name: 'Writer-Pro', status: 'idle' },
-    { id: 'sa3', name: 'PDF-Gen', status: 'error', task: 'Memory limit exceeded' },
+    { id: 'sa1', name: 'Scraper-01', status: 'active', role: 'Data Mining', skills: ['Web Search', 'Data Extraction'], task: 'Monitoring X feeds' },
+    { id: 'sa2', name: 'Writer-Pro', status: 'idle', role: 'Content Gen', skills: ['Copywriting', 'SEO'] },
+    { id: 'sa3', name: 'PDF-Gen', status: 'error', role: 'Reporting', skills: ['Layout', 'PDF Kit'], task: 'Memory limit exceeded' },
   ],
 };

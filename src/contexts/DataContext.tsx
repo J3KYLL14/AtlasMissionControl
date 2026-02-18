@@ -17,6 +17,8 @@ interface DataContextType {
     metrics: Metrics | null;
     cronJobs: CronJob[];
     subAgents: SubAgent[];
+    skills: any[];
+    reminders: any[];
     loading: boolean;
     refreshData: () => Promise<void>;
 }
@@ -29,16 +31,20 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [metrics, setMetrics] = useState<Metrics | null>(null);
     const [cronJobs, setCronJobs] = useState<CronJob[]>([]);
     const [subAgents, setSubAgents] = useState<SubAgent[]>([]);
+    const [skills, setSkills] = useState<any[]>([]);
+    const [reminders, setReminders] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     const fetchData = async () => {
         try {
-            const [tasksData, statusData, metricsData, cronData, subAgentsData] = await Promise.all([
+            const [tasksData, statusData, metricsData, cronData, subAgentsData, skillsData, remindersData] = await Promise.all([
                 api.getTasks(),
                 api.getStatus(),
                 api.getMetrics(),
                 api.getCronJobs(),
-                api.getSubAgents()
+                api.getSubAgents(),
+                api.getSkills(),
+                api.getReminders()
             ]);
 
             setTasks(tasksData);
@@ -46,6 +52,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setMetrics(metricsData);
             setCronJobs(cronData);
             setSubAgents(subAgentsData);
+            setSkills(skillsData);
+            setReminders(remindersData);
             setLoading(false);
         } catch (error) {
             console.error('Failed to fetch initial data:', error);
@@ -97,6 +105,12 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     case 'subagents_update':
                         setSubAgents(data);
                         break;
+                    case 'skills_update':
+                        setSkills(data);
+                        break;
+                    case 'reminders_update':
+                        setReminders(data);
+                        break;
                     default:
                         break;
                 }
@@ -122,6 +136,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
             metrics,
             cronJobs,
             subAgents,
+            skills,
+            reminders,
             loading,
             refreshData: fetchData
         }}>

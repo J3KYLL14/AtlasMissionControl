@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { Clock, Play, Pause, Edit2, Trash2, Calendar, Plus, X, Save } from 'lucide-react';
+import { Clock, Play, Pause, Edit2, Trash2, Calendar, Plus, X, Save, Bell } from 'lucide-react';
 import './Cron.css';
 import { useData } from '../contexts/DataContext';
 import { api } from '../services/api';
 import { v4 as uuidv4 } from 'uuid';
+import AddReminderModal from './AddReminderModal';
 
 const CronPage: React.FC = () => {
-    const { cronJobs, refreshData } = useData();
+    const { cronJobs, reminders, refreshData } = useData();
     const [showAddModal, setShowAddModal] = useState(false);
     const [newJob, setNewJob] = useState({ name: '', schedule: '0 0 * * *', command: '' });
+    const [showReminderModal, setShowReminderModal] = useState(false);
+    const [reminderPreset, setReminderPreset] = useState<{ label: string; datetime: string } | undefined>(undefined);
 
     const handleToggle = async (job: any) => {
         await api.updateCronJob({ ...job, enabled: !job.enabled });
@@ -29,12 +32,59 @@ const CronPage: React.FC = () => {
             schedule: newJob.schedule,
             enabled: true,
             lastRunStatus: 'pending',
-            nextRunAt: new Date().toISOString(), // Placeholder
-            lastRunAt: new Date().toISOString() // Placeholder
+            nextRunAt: new Date().toISOString(),
+            lastRunAt: new Date().toISOString()
         });
         setShowAddModal(false);
         setNewJob({ name: '', schedule: '0 0 * * *', command: '' });
         refreshData();
+    };
+
+    const getPresetDatetime = (type: 'in20' | 'tomorrow9' | 'custom') => {
+        const now = new Date();
+        if (type === 'in20') {
+            const d = new Date(now.getTime() + 20 * 60 * 1000);
+            return { label: 'In 20 mins', datetime: toLocalDatetime(d) };
+        }
+        if (type === 'tomorrow9') {
+            const d = new Date(now);
+            d.setDate(d.getDate() + 1);
+            d.setHours(9, 0, 0, 0);
+            return { label: 'Tomorrow 9am', datetime: toLocalDatetime(d) };
+        }
+        return undefined; // custom — no preset
+    };
+
+    const toLocalDatetime = (d: Date) => {
+        const pad = (n: number) => n.toString().padStart(2, '0');
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    };
+
+    const openReminderModal = (type: 'in20' | 'tomorrow9' | 'custom') => {
+        setReminderPreset(getPresetDatetime(type));
+        setShowReminderModal(true);
+    };
+
+    const handleSaveReminder = async (reminder: any) => {
+        await api.createReminder(reminder);
+        setShowReminderModal(false);
+        setReminderPreset(undefined);
+        refreshData();
+    };
+
+    const handleDeleteReminder = async (id: string) => {
+        await api.deleteReminder(id);
+        refreshData();
+    };
+
+    const formatReminderTime = (datetime: string) => {
+        const d = new Date(datetime);
+        const now = new Date();
+        const diff = d.getTime() - now.getTime();
+        if (diff < 0) return 'Overdue';
+        if (diff < 60 * 60 * 1000) return `In ${Math.round(diff / 60000)}m`;
+        if (diff < 24 * 60 * 60 * 1000) return `In ${Math.round(diff / 3600000)}h`;
+        return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
     };
 
     return (
@@ -62,8 +112,8 @@ const CronPage: React.FC = () => {
                     <span className="mini-value">{cronJobs.filter(j => j.enabled).length}</span>
                 </div>
                 <div className="glass-card mini-stat">
-                    <span className="mini-label">Next Run</span>
-                    <span className="mini-value">--:--</span>
+                    <span className="mini-label">Reminders</span>
+                    <span className="mini-value">{reminders.length}</span>
                 </div>
             </div>
 
@@ -128,19 +178,44 @@ const CronPage: React.FC = () => {
             <section className="reminder-wizard">
                 <h3 className="section-title">One-Shot Reminders</h3>
                 <div className="wizard-grid">
-                    <div className="glass-card wizard-card">
+                    <div className="glass-card wizard-card" onClick={() => openReminderModal('in20')}>
                         <span className="wizard-icon">⏰</span>
                         <p>In 20 mins</p>
                     </div>
-                    <div className="glass-card wizard-card">
+                    <div className="glass-card wizard-card" onClick={() => openReminderModal('tomorrow9')}>
                         <span className="wizard-icon">🌅</span>
                         <p>Tomorrow 9am</p>
                     </div>
-                    <div className="glass-card wizard-card">
+                    <div className="glass-card wizard-card" onClick={() => openReminderModal('custom')}>
                         <span className="wizard-icon">📅</span>
                         <p>Custom Time</p>
                     </div>
                 </div>
+
+                {reminders.length > 0 && (
+                    <div className="reminders-list">
+                        {reminders.map((r: any) => (
+                            <div key={r.id} className="glass-card reminder-item">
+                                <div className="reminder-item-left">
+                                    <Bell size={14} className="reminder-bell" />
+                                    <div className="reminder-item-info">
+                                        <span className="reminder-item-title">{r.title}</span>
+                                        {r.message && <span className="reminder-item-message">{r.message}</span>}
+                                    </div>
+                                </div>
+                                <div className="reminder-item-right">
+                                    <span className={`reminder-time-badge ${new Date(r.datetime) < new Date() ? 'overdue' : ''}`}>
+                                        {formatReminderTime(r.datetime)}
+                                    </span>
+                                    <span className="reminder-channel">{r.channel}</span>
+                                    <button className="icon-btn delete" title="Delete" onClick={() => handleDeleteReminder(r.id)}>
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </section>
 
             {showAddModal && (
@@ -195,8 +270,17 @@ const CronPage: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            {showReminderModal && (
+                <AddReminderModal
+                    onClose={() => { setShowReminderModal(false); setReminderPreset(undefined); }}
+                    onSave={handleSaveReminder}
+                    preset={reminderPreset}
+                />
+            )}
         </div>
     );
 };
 
 export default CronPage;
+

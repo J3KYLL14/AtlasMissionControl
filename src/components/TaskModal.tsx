@@ -128,14 +128,14 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, onClose, onSave, onDelete }
                     </div>
 
                     <div className="form-group agent-box">
-                        <label><MessageSquare size={14} /> Agent Instructions (Atlas)</label>
+                        <label><MessageSquare size={14} /> Implementation Plan</label>
                         <textarea
-                            name="agentInstructions"
-                            value={editedTask.agentInstructions || ''}
+                            name="implementationPlan"
+                            value={editedTask.implementationPlan || ''}
                             onChange={handleChange}
-                            placeholder="Add specific details or constraints for the agent..."
+                            placeholder="This is an implementation plan developed similar to those for coding projects. Write step-by-step instructions to completion here."
                             className="form-textarea agent-textarea"
-                            rows={4}
+                            rows={6}
                         />
                     </div>
 

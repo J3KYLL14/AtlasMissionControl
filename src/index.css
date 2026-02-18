@@ -4,18 +4,30 @@
   --bg-deep: #0a0a0c;
   --bg-card: #16161a;
   --bg-card-hover: #1c1c21;
-  --accent-primary: #8b5cf6;
-  --accent-secondary: #3b82f6;
+  --accent-primary: #14b8a6;
+  --accent-secondary: #06b6d4;
   --accent-gradient: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   --text-main: #f8fafc;
   --text-muted: #64748b;
   --success: #22c55e;
   --warning: #f59e0b;
   --error: #ef4444;
-  --todo: #8b5cf6;
+  --todo: #14b8a6;
   --inprogress: #f97316;
   --done: #22c55e;
   --archived: #71717a;
+
+  /* Agent Statuses */
+  --status-idle: #71717a;
+  /* Grey */
+  --status-working: #22c55e;
+  /* Green */
+  --status-blocked: #f97316;
+  /* Orange */
+  --status-awaiting: #eab308;
+  /* Yellow */
+  --status-disconnected: #ef4444;
+  /* Red */
   --border: rgba(255, 255, 255, 0.05);
   --glass: rgba(255, 255, 255, 0.02);
   --glass-hover: rgba(255, 255, 255, 0.04);
@@ -78,6 +90,13 @@ h4,
   margin-left: var(--sidebar-width);
 }
 
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
 /* Buttons */
 .btn {
   display: inline-flex;
@@ -101,7 +120,7 @@ h4,
 .btn-primary:hover {
   opacity: 0.9;
   transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 4px 15px rgba(20, 184, 166, 0.3);
 }
 
 .btn-secondary {
@@ -134,6 +153,12 @@ h4,
   background: rgba(239, 68, 68, 0.1);
   color: var(--error);
   border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* Keep native dropdown options on-theme — dark background, light text */
+option {
+  background: #16161a;
+  color: #f8fafc;
 }
 
 /* Scrollbar */

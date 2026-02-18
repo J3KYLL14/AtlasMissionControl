@@ -14,8 +14,8 @@
     "title": "Add charts to reports",
     "date": "Jan 27, 2026",
     "status": "todo",
-    "importance": 24,
-    "urgency": 30,
+    "importance": 52.5,
+    "urgency": 57.5,
     "estimatedHours": 6
   },
   {
@@ -23,7 +23,7 @@
     "title": "X API monitoring access",
     "date": "Jan 27, 2026",
     "status": "todo",
-    "importance": 87.5,
+    "importance": 82.5,
     "urgency": 50,
     "estimatedHours": 2,
     "dueDate": "2026-12-22T13:00"
@@ -35,7 +35,7 @@
     "status": "inprogress",
     "importance": 80,
     "urgency": 85,
-    "dueDate": "2026-02-17T09:00:00Z",
+    "dueDate": "2026-02-21T09:00",
     "estimatedHours": 12
   },
   {
