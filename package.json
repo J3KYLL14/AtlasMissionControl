@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"vite\"",
-    "server": "nodemon server/index.js",
+    "server": "lsof -ti :3002 | xargs kill -9 2>/dev/null || true; nodemon server/index.js",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -15,6 +15,7 @@
     "express": "^4.21.2",
     "framer-motion": "^12.34.0",
     "lucide-react": "^0.563.0",
+    "node-cron": "^4.2.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "uuid": "^11.0.5",

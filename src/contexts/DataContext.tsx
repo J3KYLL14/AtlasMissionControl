@@ -2,7 +2,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { api } from '../services/api';
 
-// Re-using types from mockData for now, but in reality should be shared types
 import type { KanbanTask, CronJob, AgentStatus, SubAgent } from '../services/mockData';
 
 interface Metrics {
@@ -36,96 +35,98 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [loading, setLoading] = useState(true);
 
     const fetchData = async () => {
-        try {
-            const [tasksData, statusData, metricsData, cronData, subAgentsData, skillsData, remindersData] = await Promise.all([
+        // Use allSettled so a single failing endpoint never blocks the others
+        const [tasksRes, statusRes, metricsRes, cronRes, subAgentsRes, skillsRes, remindersRes] =
+            await Promise.allSettled([
                 api.getTasks(),
                 api.getStatus(),
                 api.getMetrics(),
                 api.getCronJobs(),
                 api.getSubAgents(),
                 api.getSkills(),
-                api.getReminders()
+                api.getReminders(),
             ]);
 
-            setTasks(tasksData);
-            setAgentStatus(statusData);
-            setMetrics(metricsData);
-            setCronJobs(cronData);
-            setSubAgents(subAgentsData);
-            setSkills(skillsData);
-            setReminders(remindersData);
-            setLoading(false);
-        } catch (error) {
-            console.error('Failed to fetch initial data:', error);
-            // Don't set loading false here to avoid UI flicker if retry logic is added, 
-            // but for now we should probably allow partial rendering or show error
-            setLoading(false);
-        }
+        if (tasksRes.status     === 'fulfilled') setTasks(tasksRes.value);
+        if (statusRes.status    === 'fulfilled') setAgentStatus(statusRes.value);
+        if (metricsRes.status   === 'fulfilled') setMetrics(metricsRes.value);
+        if (cronRes.status      === 'fulfilled') setCronJobs(cronRes.value);
+        if (subAgentsRes.status === 'fulfilled') setSubAgents(subAgentsRes.value);
+        if (skillsRes.status    === 'fulfilled') setSkills(skillsRes.value);
+        if (remindersRes.status === 'fulfilled') setReminders(remindersRes.value);
+
+        // Log any individual failures for debugging
+        [tasksRes, statusRes, metricsRes, cronRes, subAgentsRes, skillsRes, remindersRes]
+            .forEach((r, i) => {
+                if (r.status === 'rejected') {
+                    const names = ['tasks', 'status', 'metrics', 'cron', 'subAgents', 'skills', 'reminders'];
+                    console.warn(`fetchData: ${names[i]} failed —`, r.reason?.message ?? r.reason);
+                }
+            });
+
+        setLoading(false);
     };
 
     useEffect(() => {
         fetchData();
 
-        // WebSocket Connection
-        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        // When using Vite proxy, we connect to the same host/port as the frontend
-        // and the proxy handles the upgrade. 
-        // However, if the proxy is configured to /ws -> ws://localhost:3001, 
-        // we should connect to /ws on the current origin.
-        const wsUrl = `${protocol}//${window.location.host}/ws`;
+        let unmounted = false;
+        let ws: WebSocket | null = null;
+        let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+        let attempts = 0;
 
-        // Note: The vite proxy for /ws needs to be set up correctly. 
-        // In vite.config.ts we set '/ws' -> target 'ws://localhost:3001'.
-        // So consistent with that.
+        const connect = () => {
+            if (unmounted) return;
 
-        const ws = new WebSocket(wsUrl);
+            const token = localStorage.getItem('mc_token') ?? '';
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws?token=${encodeURIComponent(token)}`;
 
-        ws.onopen = () => {
-            console.log('Connected to WebSocket');
-        };
+            ws = new WebSocket(wsUrl);
 
-        ws.onmessage = (event) => {
-            try {
-                const { event: eventName, data } = JSON.parse(event.data);
-                console.log('WS Update:', eventName, data);
+            ws.onopen = () => {
+                attempts = 0;
+                console.log('WebSocket connected');
+            };
 
-                switch (eventName) {
-                    case 'tasks_update':
-                        setTasks(data);
-                        break;
-                    case 'status_update':
-                        setAgentStatus(data);
-                        break;
-                    case 'metrics_update':
-                        setMetrics(data);
-                        break;
-                    case 'cron_update':
-                        setCronJobs(data);
-                        break;
-                    case 'subagents_update':
-                        setSubAgents(data);
-                        break;
-                    case 'skills_update':
-                        setSkills(data);
-                        break;
-                    case 'reminders_update':
-                        setReminders(data);
-                        break;
-                    default:
-                        break;
+            ws.onmessage = (event) => {
+                try {
+                    const { event: eventName, data } = JSON.parse(event.data);
+                    switch (eventName) {
+                        case 'tasks_update':     setTasks(data);       break;
+                        case 'status_update':    setAgentStatus(data); break;
+                        case 'metrics_update':   setMetrics(data);     break;
+                        case 'cron_update':      setCronJobs(data);    break;
+                        case 'subagents_update': setSubAgents(data);   break;
+                        case 'skills_update':    setSkills(data);      break;
+                        case 'reminders_update': setReminders(data);   break;
+                    }
+                } catch (err) {
+                    console.error('Error parsing WebSocket message:', err);
                 }
-            } catch (error) {
-                console.error('Error parsing WebSocket message:', error);
-            }
+            };
+
+            ws.onerror = () => {
+                ws?.close();
+            };
+
+            ws.onclose = (event) => {
+                // 1000 = intentional close, 4001 = auth rejected (don't retry)
+                if (!unmounted && event.code !== 1000 && event.code !== 4001) {
+                    const delay = Math.min(1000 * Math.pow(2, attempts), 30_000);
+                    console.log(`WebSocket disconnected. Reconnecting in ${delay}ms (attempt ${attempts + 1})`);
+                    attempts++;
+                    reconnectTimer = setTimeout(connect, delay);
+                }
+            };
         };
 
-        ws.onclose = () => {
-            console.log('WebSocket disconnected');
-            // Reconnection logic could go here
-        };
+        connect();
 
         return () => {
-            ws.close();
+            unmounted = true;
+            if (reconnectTimer) clearTimeout(reconnectTimer);
+            ws?.close(1000, 'Component unmounting');
         };
     }, []);
 

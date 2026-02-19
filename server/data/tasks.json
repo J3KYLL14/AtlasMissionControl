@@ -1,5 +1,38 @@
 [
   {
+    "id": "t-1771465270872",
+    "date": "Feb 19, 2026",
+    "title": "new task 3",
+    "status": "todo",
+    "importance": 81,
+    "urgency": 50,
+    "description": "",
+    "implementationPlan": "This is an implementation plan developed similar to those for coding projects. Step-by-step instructions to completion: \n\n1. ",
+    "estimatedHours": 4
+  },
+  {
+    "id": "t-1771464592775",
+    "date": "Feb 19, 2026",
+    "title": "New task 2",
+    "status": "todo",
+    "importance": 35,
+    "urgency": 55,
+    "description": "",
+    "implementationPlan": "This is an implementation plan developed similar to those for coding projects. Step-by-step instructions to completion: \n\n1. ",
+    "estimatedHours": 4
+  },
+  {
+    "id": "t-1771461059379",
+    "date": "Feb 19, 2026",
+    "title": "New Task",
+    "status": "todo",
+    "importance": 67.5,
+    "urgency": 47.5,
+    "description": "",
+    "implementationPlan": "This is an implementation plan developed similar to those for coding projects. Step-by-step instructions to completion: \n\n1. ",
+    "estimatedHours": 4
+  },
+  {
     "id": "t1",
     "title": "Fix PDF page breaks",
     "date": "Jan 27, 2026",
@@ -14,8 +47,8 @@
     "title": "Add charts to reports",
     "date": "Jan 27, 2026",
     "status": "todo",
-    "importance": 52.5,
-    "urgency": 57.5,
+    "importance": 40,
+    "urgency": 30,
     "estimatedHours": 6
   },
   {
@@ -23,17 +56,17 @@
     "title": "X API monitoring access",
     "date": "Jan 27, 2026",
     "status": "todo",
-    "importance": 82.5,
+    "importance": 95,
     "urgency": 50,
     "estimatedHours": 2,
-    "dueDate": "2026-12-22T13:00"
+    "dueDate": "2026-06-22T13:00"
   },
   {
     "id": "t4",
     "title": "X expert monitoring role",
     "date": "Jan 27, 2026",
     "status": "inprogress",
-    "importance": 80,
+    "importance": 62.5,
     "urgency": 85,
     "dueDate": "2026-02-21T09:00",
     "estimatedHours": 12

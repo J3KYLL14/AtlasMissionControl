@@ -56,7 +56,9 @@ export interface SubAgent {
   task?: string;
   model?: string;
   maxSpawnDepth?: number;
-  soul?: string;
+  soul?: string;       // personality / SOUL.md content
+  description?: string; // what tasks this agent handles
+  image?: string;       // profile image URL (optional)
 }
 
 export interface AgentStatus {

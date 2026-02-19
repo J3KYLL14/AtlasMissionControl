@@ -56,11 +56,10 @@ const Skills: React.FC = () => {
                                 </div>
                                 <h4 style={{ fontSize: '1.1rem', fontWeight: 600 }}>{skill.name}</h4>
                             </div>
-                            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5', marginBottom: '1.5rem' }}>
+                            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5', marginBottom: '1rem' }}>
                                 {skill.description}
                             </p>
-                            <div className="skill-footer" style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{skill.instructionCount} instructions</span>
+                            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                                 <button
                                     className="btn btn-secondary"
                                     style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}

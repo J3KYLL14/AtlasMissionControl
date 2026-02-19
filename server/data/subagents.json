@@ -1,12 +1,26 @@
 [
   {
     "id": "da479e94-0954-4340-bde4-370f0870dea4",
-    "name": "Test",
+    "name": "Tests",
     "role": "Unit Planning",
     "status": "idle",
     "model": "claude-3-haiku-20240307",
     "maxSpawnDepth": 1,
     "soul": "xxx",
+    "skills": [],
+    "task": "Ready for assignment",
+    "description": ""
+  },
+  {
+    "id": "1a5ea689-411b-4990-bcb0-7e7c0ae3ff92",
+    "name": "News",
+    "role": "Agent",
+    "status": "idle",
+    "model": "claude-sonnet-4-6",
+    "maxSpawnDepth": 1,
+    "soul": "",
+    "description": "",
+    "image": "xxx",
     "skills": [],
     "task": "Ready for assignment"
   }

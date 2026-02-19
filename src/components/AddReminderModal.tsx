@@ -78,6 +78,7 @@ const AddReminderModal: React.FC<AddReminderModalProps> = ({ onClose, onSave, pr
                             className="form-input"
                             value={channel}
                             onChange={(e) => setChannel(e.target.value)}
+                            style={{ color: 'black', backgroundColor: 'white' }}
                         >
                             <option value="dashboard">Dashboard</option>
                             {mockChannels.map((ch) => (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, LayoutGrid, Radio, MessageSquare, Clock, Zap, History, Settings, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, LayoutGrid, Radio, MessageSquare, Clock, Zap, Settings, ChevronRight, Activity } from 'lucide-react';
 import './Sidebar.css';
 
 interface SidebarProps {
@@ -13,11 +13,10 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
         { id: 'matrix', name: 'Matrix', icon: LayoutGrid },
         { id: 'cron', name: 'Cron & Reminders', icon: Clock },
         { id: 'inbox', name: 'Inbox', icon: MessageSquare },
-        { id: 'subagents', name: 'Sub Agents', icon: Zap },
+        { id: 'subagents', name: 'Agents', icon: Zap },
         { id: 'skills', name: 'Skills', icon: Radio },
         { id: 'channels', name: 'Channels', icon: Radio },
-        { id: 'runbooks', name: 'Runbooks', icon: Zap },
-        { id: 'logs', name: 'Audit Logs', icon: History },
+        { id: 'usage', name: 'Usage', icon: Activity },
         { id: 'settings', name: 'Settings', icon: Settings },
     ];
 

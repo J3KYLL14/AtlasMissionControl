@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Runtime data
+server/data/*.bak
+server/data/sessions.json

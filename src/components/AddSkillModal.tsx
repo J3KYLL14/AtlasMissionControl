@@ -7,11 +7,25 @@ interface AddSkillModalProps {
     skill?: any;
 }
 
+const stripFrontmatter = (text: string) => {
+    if (!text) return '';
+    if (text.startsWith('---')) {
+        const endMatch = text.indexOf('\n---', 3);
+        if (endMatch !== -1) {
+            let start = endMatch + 4;
+            if (text[start] === '\n') start++;
+            else if (text[start] === '\r' && text[start + 1] === '\n') start += 2;
+            return text.slice(start).trim();
+        }
+    }
+    return text;
+};
+
 const AddSkillModal: React.FC<AddSkillModalProps> = ({ onClose, onSave, skill }) => {
     const [name, setName] = useState(skill?.name || '');
     const [description, setDescription] = useState(skill?.description || '');
     const [icon, setIcon] = useState(skill?.icon || 'zap');
-    const [content, setContent] = useState(skill?.content || '# New Skill\n\n## Description\n\n## Tools / Instructions\n');
+    const [content, setContent] = useState(skill?.content ? stripFrontmatter(skill.content) : '# New Skill\n\n## Description\n\n## Tools / Instructions\n');
 
     const handleSave = () => {
         if (!name || !description) return;

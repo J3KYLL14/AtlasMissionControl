@@ -18,6 +18,19 @@ if (!fs.existsSync(SKILLS_DIR)) {
     fs.mkdirSync(SKILLS_DIR, { recursive: true });
 }
 
+// On startup, snapshot existing data files to .bak for recovery
+try {
+    const existing = fs.readdirSync(DATA_DIR).filter(f => f.endsWith('.json'));
+    for (const file of existing) {
+        fs.copyFileSync(
+            path.join(DATA_DIR, file),
+            path.join(DATA_DIR, file.replace('.json', '.bak'))
+        );
+    }
+} catch (e) {
+    console.warn('Could not create startup backups:', e.message);
+}
+
 // Initial data templates
 const INITIAL_DATA = {
     tasks: [],
@@ -35,7 +48,12 @@ const INITIAL_DATA = {
     cron: [],
     subagents: [],
     skills: [],
-    reminders: []
+    reminders: [],
+    usage: {
+        totalSpend: 0,
+        history: []
+    },
+    sessions: {}
 };
 
 export { DATA_DIR, SKILLS_DIR };
@@ -45,22 +63,21 @@ const getFilePath = (key) => path.join(DATA_DIR, `${key}.json`);
 export const readData = (key) => {
     const filePath = getFilePath(key);
     if (!fs.existsSync(filePath)) {
-        // If file doesn't exist, try to use tasks.json from root if it's 'tasks'
+        // ... (existing migration logic for tasks) ...
         if (key === 'tasks') {
             const rootTasksPath = path.resolve(__dirname, '../tasks.json');
             if (fs.existsSync(rootTasksPath)) {
                 try {
                     const data = fs.readFileSync(rootTasksPath, 'utf-8');
-                    // Migrate to new location
-                    writeData(key, JSON.parse(data));
-                    return JSON.parse(data);
+                    const parsed = JSON.parse(data);
+                    writeData(key, parsed);
+                    return parsed;
                 } catch (e) {
                     console.error("Error migrating root tasks.json", e);
                 }
             }
         }
 
-        // Initialize with default data
         const defaultData = INITIAL_DATA[key] || [];
         writeData(key, defaultData);
         return defaultData;
@@ -71,17 +88,22 @@ export const readData = (key) => {
         return JSON.parse(data);
     } catch (error) {
         console.error(`Error reading ${key}:`, error);
-        return INITIAL_DATA[key] || [];
+        // Return default data to prevent crashes
+        return INITIAL_DATA[key] || (key === 'status' || key === 'metrics' || key === 'usage' || key === 'sessions' ? {} : []);
     }
 };
 
 export const writeData = (key, data) => {
     const filePath = getFilePath(key);
+    const tmpPath = `${filePath}.tmp`;
     try {
-        fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+        const json = JSON.stringify(data, null, 2);
+        fs.writeFileSync(tmpPath, json, 'utf-8');
+        fs.renameSync(tmpPath, filePath); // atomic on same filesystem
         return true;
     } catch (error) {
         console.error(`Error writing ${key}:`, error);
+        try { fs.unlinkSync(tmpPath); } catch { /* ignore */ }
         return false;
     }
 };
@@ -127,8 +149,12 @@ export const readSkills = () => {
 };
 
 export const writeSkill = (skill) => {
-    const { id, name, description, content } = skill;
-    const skillName = id || name.toLowerCase().replace(/\s+/g, '-');
+    const { id, content, ...metadata } = skill;
+    // Ensure name and description exist for frontmatter, defaulting if needed
+    if (!metadata.name) metadata.name = id || 'Untitled Skill';
+    if (!metadata.description) metadata.description = '';
+
+    const skillName = id || metadata.name.toLowerCase().replace(/\s+/g, '-');
     const skillPath = path.join(SKILLS_DIR, skillName);
 
     try {
@@ -137,15 +163,34 @@ export const writeSkill = (skill) => {
         }
 
         const skillMdPath = path.join(skillPath, 'SKILL.md');
-        let fullContent = content;
+        let body = content || '';
 
-        // If content doesn't have frontmatter, add it
-        if (!content.startsWith('---')) {
-            fullContent = `---\nname: ${name}\ndescription: ${description}\n---\n\n${content}`;
+        // Strip existing frontmatter from content if present
+        if (body.startsWith('---')) {
+            const endFrontmatter = body.indexOf('\n---', 3);
+            if (endFrontmatter !== -1) {
+                // 4 is length of `\n---`
+                // Check if there is a newline after the closing dashes
+                let endPos = endFrontmatter + 4;
+                if (body[endPos] === '\n') endPos++;
+                else if (body[endPos] === '\r' && body[endPos + 1] === '\n') endPos += 2;
+
+                body = body.slice(endPos);
+            }
         }
 
+        // Remove system fields that shouldn't be in YAML
+        const { instructionCount, ...yamlFields } = metadata;
+
+        // Construct YAML frontmatter
+        const frontmatter = Object.entries(yamlFields)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join('\n');
+
+        const fullContent = `---\n${frontmatter}\n---\n\n${body.trim()}`;
+
         fs.writeFileSync(skillMdPath, fullContent, 'utf-8');
-        return { id: skillName, name, description, content: fullContent };
+        return { id: skillName, ...metadata, content: fullContent };
     } catch (e) {
         console.error("Error writing skill", e);
         return null;
