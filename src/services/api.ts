@@ -1,8 +1,19 @@
-
-const getHeaders = () => ({
+const jsonHeaders = {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${localStorage.getItem('mc_token') ?? ''}`,
-});
+    'X-Requested-With': 'missioncontrol',
+};
+
+type Payload = object;
+
+const request = (url: string, init: RequestInit = {}) =>
+    fetch(url, {
+        credentials: 'include',
+        ...init,
+        headers: {
+            ...(init.body ? jsonHeaders : { 'X-Requested-With': 'missioncontrol' }),
+            ...(init.headers || {}),
+        },
+    });
 
 const handleResponse = async (response: Response) => {
     if (response.status === 401) {
@@ -17,40 +28,36 @@ const handleResponse = async (response: Response) => {
 };
 
 export const api = {
-    // Tasks
-    getTasks: () => fetch('/api/tasks', { headers: getHeaders() }).then(handleResponse),
-    createTask: (task: any) => fetch('/api/tasks', { method: 'POST', headers: getHeaders(), body: JSON.stringify(task) }).then(handleResponse),
-    updateTask: (task: any) => fetch('/api/tasks', { method: 'PUT', headers: getHeaders(), body: JSON.stringify(task) }).then(handleResponse),
-    deleteTask: (id: string) => fetch(`/api/tasks?id=${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
+    getTasks: () => request('/api/tasks').then(handleResponse),
+    createTask: (task: Payload) => request('/api/tasks', { method: 'POST', body: JSON.stringify(task) }).then(handleResponse),
+    updateTask: (task: Payload) => request('/api/tasks', { method: 'PUT', body: JSON.stringify(task) }).then(handleResponse),
+    deleteTask: (id: string) => request(`/api/tasks?id=${id}`, { method: 'DELETE' }).then(handleResponse),
 
-    // Status
-    getStatus: () => fetch('/api/status', { headers: getHeaders() }).then(handleResponse),
-    updateStatus: (status: any) => fetch('/api/status', { method: 'PUT', headers: getHeaders(), body: JSON.stringify(status) }).then(handleResponse),
+    getStatus: () => request('/api/status').then(handleResponse),
+    updateStatus: (status: Payload) => request('/api/status', { method: 'PUT', body: JSON.stringify(status) }).then(handleResponse),
 
-    // Metrics
-    getMetrics: () => fetch('/api/metrics', { headers: getHeaders() }).then(handleResponse),
-    updateMetrics: (metrics: any) => fetch('/api/metrics', { method: 'PUT', headers: getHeaders(), body: JSON.stringify(metrics) }).then(handleResponse),
+    getMetrics: () => request('/api/metrics').then(handleResponse),
+    updateMetrics: (metrics: Payload) => request('/api/metrics', { method: 'PUT', body: JSON.stringify(metrics) }).then(handleResponse),
 
-    // Cron
-    getCronJobs: () => fetch('/api/cron', { headers: getHeaders() }).then(handleResponse),
-    createCronJob: (job: any) => fetch('/api/cron', { method: 'POST', headers: getHeaders(), body: JSON.stringify(job) }).then(handleResponse),
-    updateCronJob: (job: any) => fetch('/api/cron', { method: 'PUT', headers: getHeaders(), body: JSON.stringify(job) }).then(handleResponse),
-    deleteCronJob: (id: string) => fetch(`/api/cron?id=${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
+    getCronJobs: () => request('/api/cron').then(handleResponse),
+    createCronJob: (job: Payload) => request('/api/cron', { method: 'POST', body: JSON.stringify(job) }).then(handleResponse),
+    updateCronJob: (job: Payload) => request('/api/cron', { method: 'PUT', body: JSON.stringify(job) }).then(handleResponse),
+    deleteCronJob: (id: string) => request(`/api/cron?id=${id}`, { method: 'DELETE' }).then(handleResponse),
 
-    // SubAgents
-    getSubAgents: () => fetch('/api/subAgents', { headers: getHeaders() }).then(handleResponse),
-    createSubAgent: (agent: any) => fetch('/api/subAgents', { method: 'POST', headers: getHeaders(), body: JSON.stringify(agent) }).then(handleResponse),
-    updateSubAgent: (agent: any) => fetch('/api/subAgents', { method: 'PUT', headers: getHeaders(), body: JSON.stringify(agent) }).then(handleResponse),
-    deleteSubAgent: (id: string) => fetch(`/api/subAgents?id=${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
+    getSubAgents: () => request('/api/subAgents').then(handleResponse),
+    createSubAgent: (agent: Payload) => request('/api/subAgents', { method: 'POST', body: JSON.stringify(agent) }).then(handleResponse),
+    updateSubAgent: (agent: Payload) => request('/api/subAgents', { method: 'PUT', body: JSON.stringify(agent) }).then(handleResponse),
+    deleteSubAgent: (id: string) => request(`/api/subAgents?id=${id}`, { method: 'DELETE' }).then(handleResponse),
 
-    // Skills
-    getSkills: () => fetch('/api/skills', { headers: getHeaders() }).then(handleResponse),
-    createSkill: (skill: any) => fetch('/api/skills', { method: 'POST', headers: getHeaders(), body: JSON.stringify(skill) }).then(handleResponse),
-    updateSkill: (skill: any) => fetch('/api/skills', { method: 'PUT', headers: getHeaders(), body: JSON.stringify(skill) }).then(handleResponse),
-    deleteSkill: (id: string) => fetch(`/api/skills?id=${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
+    getSkills: () => request('/api/skills').then(handleResponse),
+    createSkill: (skill: Payload) => request('/api/skills', { method: 'POST', body: JSON.stringify(skill) }).then(handleResponse),
+    updateSkill: (skill: Payload) => request('/api/skills', { method: 'PUT', body: JSON.stringify(skill) }).then(handleResponse),
+    deleteSkill: (id: string) => request(`/api/skills?id=${id}`, { method: 'DELETE' }).then(handleResponse),
 
-    // Reminders
-    getReminders: () => fetch('/api/reminders', { headers: getHeaders() }).then(handleResponse),
-    createReminder: (reminder: any) => fetch('/api/reminders', { method: 'POST', headers: getHeaders(), body: JSON.stringify(reminder) }).then(handleResponse),
-    deleteReminder: (id: string) => fetch(`/api/reminders?id=${id}`, { method: 'DELETE', headers: getHeaders() }).then(handleResponse),
+    getReminders: () => request('/api/reminders').then(handleResponse),
+    createReminder: (reminder: Payload) => request('/api/reminders', { method: 'POST', body: JSON.stringify(reminder) }).then(handleResponse),
+    deleteReminder: (id: string) => request(`/api/reminders?id=${id}`, { method: 'DELETE' }).then(handleResponse),
+
+    getSession: () => request('/api/auth/session').then(handleResponse),
+    logout: () => request('/api/auth/logout', { method: 'POST' }).then(handleResponse),
 };

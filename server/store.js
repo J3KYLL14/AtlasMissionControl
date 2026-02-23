@@ -59,6 +59,23 @@ const INITIAL_DATA = {
 export { DATA_DIR, SKILLS_DIR };
 
 const getFilePath = (key) => path.join(DATA_DIR, `${key}.json`);
+const SKILL_ID_REGEX = /^[a-z0-9][a-z0-9-_]{0,63}$/i;
+export const normalizeSkillId = (value) =>
+    value
+        .toString()
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9-_]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 64);
+
+export const resolveSkillPath = (id) => {
+    if (!id || !SKILL_ID_REGEX.test(id)) return null;
+    const resolved = path.resolve(SKILLS_DIR, id);
+    const base = path.resolve(SKILLS_DIR);
+    if (!resolved.startsWith(`${base}${path.sep}`) && resolved !== base) return null;
+    return resolved;
+};
 
 export const readData = (key) => {
     const filePath = getFilePath(key);
@@ -154,8 +171,11 @@ export const writeSkill = (skill) => {
     if (!metadata.name) metadata.name = id || 'Untitled Skill';
     if (!metadata.description) metadata.description = '';
 
-    const skillName = id || metadata.name.toLowerCase().replace(/\s+/g, '-');
-    const skillPath = path.join(SKILLS_DIR, skillName);
+    const rawSkillName = id || metadata.name;
+    const skillName = normalizeSkillId(rawSkillName);
+    if (!skillName || !SKILL_ID_REGEX.test(skillName)) return null;
+    const skillPath = resolveSkillPath(skillName);
+    if (!skillPath) return null;
 
     try {
         if (!fs.existsSync(skillPath)) {
@@ -198,7 +218,8 @@ export const writeSkill = (skill) => {
 };
 
 export const deleteSkill = (id) => {
-    const skillPath = path.join(SKILLS_DIR, id);
+    const skillPath = resolveSkillPath((id || '').toString());
+    if (!skillPath) return false;
     try {
         if (fs.existsSync(skillPath)) {
             fs.rmSync(skillPath, { recursive: true, force: true });

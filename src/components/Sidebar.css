@@ -118,6 +118,10 @@
     border: 1px solid var(--border);
 }
 
+.agent-avatar-icon {
+    color: #10b981;
+}
+
 .status-dot-inner {
     position: absolute;
     bottom: 5px;

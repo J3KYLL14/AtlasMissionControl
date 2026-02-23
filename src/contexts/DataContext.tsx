@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { api } from '../services/api';
 
 import type { KanbanTask, CronJob, AgentStatus, SubAgent } from '../services/mockData';
+import type { SkillRecord, ReminderRecord } from '../services/types';
 
 interface Metrics {
     avgTaskTime: string;
@@ -16,8 +17,8 @@ interface DataContextType {
     metrics: Metrics | null;
     cronJobs: CronJob[];
     subAgents: SubAgent[];
-    skills: any[];
-    reminders: any[];
+    skills: SkillRecord[];
+    reminders: ReminderRecord[];
     loading: boolean;
     refreshData: () => Promise<void>;
 }
@@ -30,8 +31,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [metrics, setMetrics] = useState<Metrics | null>(null);
     const [cronJobs, setCronJobs] = useState<CronJob[]>([]);
     const [subAgents, setSubAgents] = useState<SubAgent[]>([]);
-    const [skills, setSkills] = useState<any[]>([]);
-    const [reminders, setReminders] = useState<any[]>([]);
+    const [skills, setSkills] = useState<SkillRecord[]>([]);
+    const [reminders, setReminders] = useState<ReminderRecord[]>([]);
     const [loading, setLoading] = useState(true);
 
     const fetchData = async () => {
@@ -78,9 +79,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const connect = () => {
             if (unmounted) return;
 
-            const token = localStorage.getItem('mc_token') ?? '';
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsUrl = `${protocol}//${window.location.host}/ws?token=${encodeURIComponent(token)}`;
+            const wsUrl = `${protocol}//${window.location.host}/ws`;
 
             ws = new WebSocket(wsUrl);
 
@@ -147,6 +147,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useData = () => {
     const context = useContext(DataContext);
     if (context === undefined) {

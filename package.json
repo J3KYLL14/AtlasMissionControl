@@ -7,6 +7,7 @@
     "dev": "concurrently \"npm run server\" \"vite\"",
     "server": "lsof -ti :3002 | xargs kill -9 2>/dev/null || true; nodemon server/index.js",
     "build": "tsc -b && vite build",
+    "test": "node --test tests/*.test.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },

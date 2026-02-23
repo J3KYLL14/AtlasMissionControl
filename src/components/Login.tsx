@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Shield, Eye, EyeOff } from 'lucide-react';
 
 interface LoginProps {
-    onLogin: (token: string, username: string) => void;
+    onLogin: () => void;
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
@@ -20,7 +20,11 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         try {
             const res = await fetch('/api/auth/login', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'missioncontrol',
+                },
                 body: JSON.stringify({ username, password }),
             });
 
@@ -31,7 +35,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 return;
             }
 
-            onLogin(data.token, data.username);
+            onLogin();
         } catch {
             setError('Unable to connect to server');
         } finally {

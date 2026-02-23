@@ -18,7 +18,19 @@ Open your terminal in the project root directory and run:
 npm install
 ```
 
-### 2. Run the Development Server
+### 2. Configure Environment Variables
+Copy the template and set secure values:
+
+```bash
+cp .env.example .env
+```
+
+Minimum required for production:
+- `ADMIN_PASSWORD_HASH`
+- `ALLOWED_ORIGINS`
+- `AGENT_TOKEN_HASH` (if using agent auth)
+
+### 3. Run the Development Server
 To start the application in development mode with Hot Module Replacement (HMR):
 
 ```bash
@@ -81,6 +93,12 @@ To run the linter and check for code style or potential errors:
 
 ```bash
 npm run lint
+```
+
+To run the security-focused test suite:
+
+```bash
+npm test
 ```
 
 ---

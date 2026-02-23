@@ -13,15 +13,18 @@
   },
   {
     "id": "1a5ea689-411b-4990-bcb0-7e7c0ae3ff92",
-    "name": "News",
+    "name": "Web Designer",
     "role": "Agent",
     "status": "idle",
-    "model": "claude-sonnet-4-6",
+    "model": "claude-opus-4-6",
     "maxSpawnDepth": 1,
     "soul": "",
-    "description": "",
-    "image": "xxx",
-    "skills": [],
+    "description": "This agent is responsible for all webdesign tasks",
+    "image": "/images/avatars/web-designer.svg",
+    "skills": [
+      "TestSkill",
+      "TestSkill2"
+    ],
     "task": "Ready for assignment"
   }
 ]

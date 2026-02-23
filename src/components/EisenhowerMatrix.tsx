@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import type { PanInfo } from 'framer-motion';
 import type { KanbanTask } from '../services/mockData';
 import { AlertCircle, Clock, CheckCircle2, Zap, Calendar, Plus } from 'lucide-react';
 import TaskModal from './TaskModal';
@@ -74,7 +75,7 @@ const EisenhowerMatrix: React.FC = () => {
         return isNaN(score) ? 50 : score;
     };
 
-    const handleDragEnd = (taskId: string, _: any, info: any) => {
+    const handleDragEnd = (taskId: string, _event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
         if (!containerRef.current || dimensions.width === 0) return;
 
         const rect = containerRef.current.getBoundingClientRect();

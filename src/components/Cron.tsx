@@ -5,6 +5,8 @@ import { useData } from '../contexts/DataContext';
 import { api } from '../services/api';
 import { v4 as uuidv4 } from 'uuid';
 import AddReminderModal from './AddReminderModal';
+import type { CronJob } from '../services/mockData';
+import type { ReminderRecord } from '../services/types';
 
 const CronPage: React.FC = () => {
     const { cronJobs, reminders, refreshData } = useData();
@@ -13,7 +15,7 @@ const CronPage: React.FC = () => {
     const [showReminderModal, setShowReminderModal] = useState(false);
     const [reminderPreset, setReminderPreset] = useState<{ label: string; datetime: string } | undefined>(undefined);
 
-    const handleToggle = async (job: any) => {
+    const handleToggle = async (job: CronJob) => {
         await api.updateCronJob({ ...job, enabled: !job.enabled });
         refreshData();
     };
@@ -30,6 +32,7 @@ const CronPage: React.FC = () => {
             id: uuidv4(),
             name: newJob.name,
             schedule: newJob.schedule,
+            command: newJob.command,
             enabled: true,
             lastRunStatus: 'pending',
             nextRunAt: new Date().toISOString(),
@@ -65,7 +68,7 @@ const CronPage: React.FC = () => {
         setShowReminderModal(true);
     };
 
-    const handleSaveReminder = async (reminder: any) => {
+    const handleSaveReminder = async (reminder: ReminderRecord) => {
         await api.createReminder(reminder);
         setShowReminderModal(false);
         setReminderPreset(undefined);
@@ -194,8 +197,8 @@ const CronPage: React.FC = () => {
 
                 {reminders.length > 0 && (
                     <div className="reminders-list">
-                        {reminders.map((r: any) => (
-                            <div key={r.id} className="glass-card reminder-item">
+                        {reminders.map((r: ReminderRecord, idx: number) => (
+                            <div key={r.id || `reminder-${idx}`} className="glass-card reminder-item">
                                 <div className="reminder-item-left">
                                     <Bell size={14} className="reminder-bell" />
                                     <div className="reminder-item-info">
@@ -204,11 +207,11 @@ const CronPage: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="reminder-item-right">
-                                    <span className={`reminder-time-badge ${new Date(r.datetime) < new Date() ? 'overdue' : ''}`}>
-                                        {formatReminderTime(r.datetime)}
+                                    <span className={`reminder-time-badge ${r.datetime && new Date(r.datetime) < new Date() ? 'overdue' : ''}`}>
+                                        {formatReminderTime(r.datetime || r.dueAt || new Date().toISOString())}
                                     </span>
                                     <span className="reminder-channel">{r.channel}</span>
-                                    <button className="icon-btn delete" title="Delete" onClick={() => handleDeleteReminder(r.id)}>
+                                    <button className="icon-btn delete" title="Delete" onClick={() => r.id && handleDeleteReminder(r.id)}>
                                         <Trash2 size={14} />
                                     </button>
                                 </div>
@@ -283,4 +286,3 @@ const CronPage: React.FC = () => {
 };
 
 export default CronPage;
-

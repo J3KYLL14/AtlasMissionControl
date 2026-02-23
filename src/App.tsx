@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { DataProvider } from './contexts/DataContext'
-import { useData } from './contexts/DataContext'
+import { DataProvider, useData } from './contexts/DataContext'
+import { api } from './services/api'
 import Sidebar from './components/Sidebar'
 import Overview from './components/Overview'
 import EisenhowerMatrix from './components/EisenhowerMatrix'
@@ -8,15 +8,12 @@ import Channels from './components/Channels'
 import Inbox from './components/Inbox'
 import Cron from './components/Cron'
 import Login from './components/Login'
-import UsagePage from './components/Usage'
 import './App.css'
-
 import Settings from './components/Settings'
 import SubAgents from './components/SubAgents'
 import Skills from './components/Skills'
-
-// ─── Authenticated dashboard ──────────────────────────────────────────────────
-// Rendered only after login, inside DataProvider so fetchData has a valid token.
+import UsagePage from './components/Usage'
+import Deliverables from './components/Deliverables'
 
 interface DashboardProps {
   onLogout: () => void;
@@ -36,6 +33,7 @@ function Dashboard({ onLogout }: DashboardProps) {
       case 'settings': return <Settings />
       case 'subagents': return <SubAgents />
       case 'skills': return <Skills />
+      case 'deliverables': return <Deliverables />
       case 'usage': return <UsagePage />
       default: return <Overview />
     }
@@ -68,43 +66,53 @@ function Dashboard({ onLogout }: DashboardProps) {
   )
 }
 
-// ─── Root App — handles auth gate ─────────────────────────────────────────────
-
 function App() {
-  const [authToken, setAuthToken] = useState<string | null>(() => localStorage.getItem('mc_token'))
+  const [authReady, setAuthReady] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
-  const handleLogin = (token: string) => {
-    localStorage.setItem('mc_token', token)
-    setAuthToken(token)
+  const verifySession = async () => {
+    try {
+      await api.getSession()
+      setIsAuthenticated(true)
+    } catch {
+      setIsAuthenticated(false)
+    } finally {
+      setAuthReady(true)
+    }
   }
 
   useEffect(() => {
+    verifySession()
+
     const onAuthError = () => {
-      localStorage.removeItem('mc_token')
-      setAuthToken(null)
+      setIsAuthenticated(false)
     }
     window.addEventListener('auth:unauthorized', onAuthError)
     return () => window.removeEventListener('auth:unauthorized', onAuthError)
   }, [])
 
-  const handleLogout = async () => {
-    const token = localStorage.getItem('mc_token')
-    if (token) {
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-      }).catch(() => { })
-    }
-    localStorage.removeItem('mc_token')
-    setAuthToken(null)
+  const handleLogin = async () => {
+    await verifySession()
   }
 
-  if (!authToken) {
+  const handleLogout = async () => {
+    await api.logout().catch(() => { })
+    setIsAuthenticated(false)
+  }
+
+  if (!authReady) {
+    return (
+      <div className="loading-screen">
+        <div className="loader"></div>
+        <p>Checking session...</p>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
     return <Login onLogin={handleLogin} />
   }
 
-  // DataProvider mounts only when authenticated → fetchData runs with a valid token.
-  // When the user logs out, authToken → null and the provider unmounts, clearing all state.
   return (
     <DataProvider>
       <Dashboard onLogout={handleLogout} />

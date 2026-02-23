@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { X, Save, Book, Code } from 'lucide-react';
+import type { SkillRecord } from '../services/types';
 
 interface AddSkillModalProps {
     onClose: () => void;
-    onSave: (skill: any) => void;
-    skill?: any;
+    onSave: (skill: SkillRecord) => void;
+    skill?: SkillRecord;
 }
 
 const stripFrontmatter = (text: string) => {

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Bell, X, Save } from 'lucide-react';
 import { mockChannels } from '../services/mockData';
+import type { ReminderRecord } from '../services/types';
 
 interface AddReminderModalProps {
     onClose: () => void;
-    onSave: (reminder: any) => void;
+    onSave: (reminder: ReminderRecord) => void;
     preset?: { label: string; datetime: string };
 }
 

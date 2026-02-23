@@ -3,13 +3,14 @@ import { Plus, Code, Zap, Globe, MessageSquare } from 'lucide-react';
 import { useData } from '../contexts/DataContext';
 import { api } from '../services/api';
 import AddSkillModal from './AddSkillModal';
+import type { SkillRecord } from '../services/types';
 
 const Skills: React.FC = () => {
     const { skills, refreshData } = useData();
     const [showAddModal, setShowAddModal] = useState(false);
-    const [editingSkill, setEditingSkill] = useState<any | undefined>(undefined);
+    const [editingSkill, setEditingSkill] = useState<SkillRecord | undefined>(undefined);
 
-    const handleSaveSkill = async (skill: any) => {
+    const handleSaveSkill = async (skill: SkillRecord) => {
         if (skill.id) {
             await api.updateSkill(skill);
         } else {
@@ -47,7 +48,7 @@ const Skills: React.FC = () => {
 
             <div className="skills-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', marginTop: '1rem' }}>
                 {skills.map(skill => {
-                    const Icon = getIcon(skill.icon);
+                    const Icon = getIcon(skill.icon || 'zap');
                     return (
                         <div key={skill.id} className="glass-card skill-card" style={{ padding: '1.5rem', transition: 'var(--transition)', cursor: 'pointer' }}>
                             <div className="skill-header" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>

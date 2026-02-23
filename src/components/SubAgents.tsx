@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { UserPlus } from 'lucide-react';
+import { UserPlus, Trash2 } from 'lucide-react';
 import { useData } from '../contexts/DataContext';
 import { api } from '../services/api';
 import AddSubAgentModal from './AddSubAgentModal';
 import AgentDetailModal from './AgentDetailModal';
+import ConfirmationModal from './ConfirmationModal';
 import type { SubAgent } from '../services/mockData';
 import './Agents.css';
 
@@ -16,7 +17,11 @@ const STATUS_COLOR: Record<string, string> = {
 const initials = (name: string) =>
     name.split(/[\s\-_]+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
 
-const AgentCard: React.FC<{ agent: SubAgent; onClick: () => void }> = ({ agent, onClick }) => {
+const AgentCard: React.FC<{ agent: SubAgent; onClick: () => void; onDelete: (agent: SubAgent) => void }> = ({
+    agent,
+    onClick,
+    onDelete
+}) => {
     const statusColor = STATUS_COLOR[agent.status] ?? 'var(--status-idle)';
     const visibleSkills = agent.skills.slice(0, 3);
     const extra = agent.skills.length - visibleSkills.length;
@@ -45,6 +50,16 @@ const AgentCard: React.FC<{ agent: SubAgent; onClick: () => void }> = ({ agent, 
             )}
 
             <span className="apc-cta">View profile</span>
+            <button
+                type="button"
+                className="apc-delete-btn"
+                onClick={(event) => {
+                    event.stopPropagation();
+                    onDelete(agent);
+                }}
+            >
+                <Trash2 size={14} /> Delete
+            </button>
         </button>
     );
 };
@@ -54,6 +69,8 @@ const SubAgents: React.FC = () => {
     const [showAddModal, setShowAddModal]       = useState(false);
     const [editingAgent, setEditingAgent]       = useState<SubAgent | undefined>();
     const [viewingAgent, setViewingAgent]       = useState<SubAgent | undefined>();
+    const [deletingAgent, setDeletingAgent]     = useState<SubAgent | undefined>();
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     const handleSave = async (agent: Partial<SubAgent>) => {
         if (agent.id) {
@@ -70,6 +87,14 @@ const SubAgents: React.FC = () => {
         setViewingAgent(undefined);
         setEditingAgent(agent);
         setShowAddModal(true);
+    };
+
+    const handleDelete = async () => {
+        if (!deletingAgent) return;
+        await api.deleteSubAgent(deletingAgent.id);
+        setShowDeleteConfirm(false);
+        setDeletingAgent(undefined);
+        refreshData();
     };
 
     return (
@@ -93,6 +118,10 @@ const SubAgents: React.FC = () => {
                             key={agent.id}
                             agent={agent}
                             onClick={() => setViewingAgent(agent)}
+                            onDelete={(agentToDelete) => {
+                                setDeletingAgent(agentToDelete);
+                                setShowDeleteConfirm(true);
+                            }}
                         />
                     ))}
                 </div>
@@ -111,6 +140,17 @@ const SubAgents: React.FC = () => {
                     agent={editingAgent}
                     onClose={() => { setShowAddModal(false); setEditingAgent(undefined); }}
                     onSave={handleSave}
+                />
+            )}
+            {deletingAgent && (
+                <ConfirmationModal
+                    isOpen={showDeleteConfirm}
+                    onClose={() => { setShowDeleteConfirm(false); setDeletingAgent(undefined); }}
+                    onConfirm={handleDelete}
+                    title="Delete Agent?"
+                    message={`Delete ${deletingAgent.name}? This cannot be undone.`}
+                    confirmText="Delete agent"
+                    type="danger"
                 />
             )}
         </div>

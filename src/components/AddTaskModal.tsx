@@ -67,7 +67,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ onClose, onSave }) => {
                             <label>Initial Status</label>
                             <select
                                 value={status}
-                                onChange={e => setStatus(e.target.value as any)}
+                                onChange={e => setStatus(e.target.value as 'todo' | 'inprogress')}
                                 className="form-select"
                             >
                                 <option value="todo">To Do</option>

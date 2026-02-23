@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, LayoutGrid, Radio, MessageSquare, Clock, Zap, Settings, ChevronRight, Activity } from 'lucide-react';
+import { LayoutDashboard, LayoutGrid, Radio, MessageSquare, Clock, Zap, Settings, ChevronRight, Activity, FolderOpen, Compass } from 'lucide-react';
 import './Sidebar.css';
 
 interface SidebarProps {
@@ -16,6 +16,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
         { id: 'subagents', name: 'Agents', icon: Zap },
         { id: 'skills', name: 'Skills', icon: Radio },
         { id: 'channels', name: 'Channels', icon: Radio },
+        { id: 'deliverables', name: 'Deliverables', icon: FolderOpen },
         { id: 'usage', name: 'Usage', icon: Activity },
         { id: 'settings', name: 'Settings', icon: Settings },
     ];
@@ -23,11 +24,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
     return (
         <div className="sidebar">
             <div className="sidebar-agent-section">
-                <div className="agent-profile">
-                    <div className="agent-avatar-large">
-                        <span className="avatar-emoji">🧪</span>
-                        <div className="status-dot-inner idle"></div>
-                    </div>
+            <div className="agent-profile">
+                <div className="agent-avatar-large">
+                    <Compass size={36} className="agent-avatar-icon" />
+                    <div className="status-dot-inner idle"></div>
+                </div>
                     <div className="agent-profile-info">
                         <span className="agent-display-name">Atlas</span>
                         <div className="agent-display-status">
