@@ -39,12 +39,15 @@ export interface KanbanTask {
   title: string;
   description?: string;
   implementationPlan?: string;
+  assignee?: string;
+  markdownFiles?: string[];
   date: string;
-  status: 'todo' | 'inprogress' | 'done' | 'archived';
+  status: 'todo' | 'paused' | 'inprogress' | 'done' | 'archived';
   importance: number; // 0-100
   urgency: number;    // 0-100 (if no dueDate)
   dueDate?: string;   // ISO string
   estimatedHours?: number;
+  readOnly?: boolean;
 }
 
 export interface SubAgent {
@@ -65,6 +68,7 @@ export interface AgentStatus {
   name: string;
   status: 'idle' | 'working' | 'blocked' | 'awaiting' | 'disconnected';
   message: string;
+  image?: string;
   subAgents: SubAgent[];
 }
 

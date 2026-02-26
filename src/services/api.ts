@@ -45,6 +45,8 @@ export const api = {
     deleteCronJob: (id: string) => request(`/api/cron?id=${id}`, { method: 'DELETE' }).then(handleResponse),
 
     getSubAgents: () => request('/api/subAgents').then(handleResponse),
+    getSubAgentMarkdown: (name: string, limit = 200) =>
+        request(`/api/subAgents/markdown?name=${encodeURIComponent(name)}&limit=${encodeURIComponent(String(limit))}`).then(handleResponse),
     createSubAgent: (agent: Payload) => request('/api/subAgents', { method: 'POST', body: JSON.stringify(agent) }).then(handleResponse),
     updateSubAgent: (agent: Payload) => request('/api/subAgents', { method: 'PUT', body: JSON.stringify(agent) }).then(handleResponse),
     deleteSubAgent: (id: string) => request(`/api/subAgents?id=${id}`, { method: 'DELETE' }).then(handleResponse),
@@ -53,10 +55,13 @@ export const api = {
     createSkill: (skill: Payload) => request('/api/skills', { method: 'POST', body: JSON.stringify(skill) }).then(handleResponse),
     updateSkill: (skill: Payload) => request('/api/skills', { method: 'PUT', body: JSON.stringify(skill) }).then(handleResponse),
     deleteSkill: (id: string) => request(`/api/skills?id=${id}`, { method: 'DELETE' }).then(handleResponse),
+    setSkillEnabled: (slug: string, enabled: boolean) => request('/api/skills/enable', { method: 'PUT', body: JSON.stringify({ slug, enabled }) }).then(handleResponse),
 
     getReminders: () => request('/api/reminders').then(handleResponse),
     createReminder: (reminder: Payload) => request('/api/reminders', { method: 'POST', body: JSON.stringify(reminder) }).then(handleResponse),
     deleteReminder: (id: string) => request(`/api/reminders?id=${id}`, { method: 'DELETE' }).then(handleResponse),
+
+    getChannels: () => request('/api/channels').then(handleResponse),
 
     getSession: () => request('/api/auth/session').then(handleResponse),
     logout: () => request('/api/auth/logout', { method: 'POST' }).then(handleResponse),

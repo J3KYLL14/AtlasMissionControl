@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, Save, Shield, Brain, Cpu, MessageSquare, Image, FileText } from 'lucide-react';
+import { X, Save, Shield, Brain, Cpu, MessageSquare, Image, FileText, Zap, Search } from 'lucide-react';
 import type { SubAgent } from '../services/mockData';
+import { useData } from '../contexts/DataContext';
 
 interface AddSubAgentModalProps {
     onClose: () => void;
@@ -9,15 +10,31 @@ interface AddSubAgentModalProps {
 }
 
 const AddSubAgentModal: React.FC<AddSubAgentModalProps> = ({ onClose, onSave, agent }) => {
-    const [name,          setName]          = useState(agent?.name          ?? '');
-    const [role,          setRole]          = useState(agent?.role          ?? '');
-    const [model,         setModel]         = useState(agent?.model         ?? 'claude-sonnet-4-6');
-    const [maxSpawnDepth, setMaxSpawnDepth] = useState(agent?.maxSpawnDepth ?? 1);
-    const [soul,          setSoul]          = useState(agent?.soul          ?? '');
-    const [description,   setDescription]   = useState(agent?.description   ?? '');
-    const [image,         setImage]         = useState(agent?.image         ?? '');
+    const { skills: allSkills } = useData();
+
+    const [name,           setName]          = useState(agent?.name          ?? '');
+    const [role,           setRole]          = useState(agent?.role          ?? '');
+    const [model,          setModel]         = useState(agent?.model         ?? 'openai/gpt-5.2');
+    const [maxSpawnDepth,  setMaxSpawnDepth] = useState(agent?.maxSpawnDepth ?? 1);
+    const [soul,           setSoul]          = useState(agent?.soul          ?? '');
+    const [description,    setDescription]   = useState(agent?.description   ?? '');
+    const [image,          setImage]         = useState(agent?.image         ?? '');
     const [selectedSkills, setSelectedSkills] = useState<string[]>(agent?.skills ?? []);
-    const [newSkill,      setNewSkill]      = useState('');
+    const [skillSearch,    setSkillSearch]   = useState('');
+
+    // Only show enabled skills (workspace + toggled catalog)
+    const availableSkills = allSkills.filter(s => s.enabled);
+
+    const filteredSkills = availableSkills.filter(s => {
+        const q = skillSearch.toLowerCase();
+        return !q || s.name.toLowerCase().includes(q) || (s.description || '').toLowerCase().includes(q);
+    });
+
+    const toggleSkill = (slug: string) => {
+        setSelectedSkills(prev =>
+            prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug]
+        );
+    };
 
     const handleSave = () => {
         if (!name || !role) return;
@@ -34,14 +51,6 @@ const AddSubAgentModal: React.FC<AddSubAgentModalProps> = ({ onClose, onSave, ag
             skills: selectedSkills,
             task: agent?.task ?? 'Ready for assignment',
         });
-    };
-
-    const addSkill = () => {
-        const trimmed = newSkill.trim();
-        if (trimmed && !selectedSkills.includes(trimmed)) {
-            setSelectedSkills([...selectedSkills, trimmed]);
-            setNewSkill('');
-        }
     };
 
     const isEditing = Boolean(agent?.id);
@@ -86,9 +95,25 @@ const AddSubAgentModal: React.FC<AddSubAgentModalProps> = ({ onClose, onSave, ag
                         <div className="form-group">
                             <label><Brain size={14} /> Intelligence Model</label>
                             <select value={model} onChange={e => setModel(e.target.value)} className="form-select">
-                                <option value="claude-sonnet-4-6">Claude Sonnet 4.6 (Balanced)</option>
-                                <option value="claude-opus-4-6">Claude Opus 4.6 (Complex reasoning)</option>
-                                <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 (Fast / Cheap)</option>
+                                <optgroup label="OpenAI">
+                                    <option value="openai/gpt-5.2">ChatGPT 5.2 (Latest / Recommended)</option>
+                                    <option value="openai/gpt-5">ChatGPT 5</option>
+                                    <option value="openai/gpt-5-mini">ChatGPT 5 Mini (Fast / Cheap)</option>
+                                    <option value="openai/gpt-4.1">ChatGPT 4.1</option>
+                                    <option value="openai/gpt-5.1-codex">ChatGPT 5.1 Codex</option>
+                                    <option value="openai/gpt-5.3-codex">Codex 5.3</option>
+                                </optgroup>
+                                <optgroup label="Anthropic">
+                                    <option value="anthropic/claude-opus-4-6">Claude Opus 4.6 (Complex reasoning)</option>
+                                    <option value="anthropic/claude-sonnet-4-5">Claude Sonnet 4.5 (Balanced)</option>
+                                    <option value="anthropic/claude-haiku-4-5">Claude Haiku 4.5 (Fast / Cheap)</option>
+                                </optgroup>
+                                <optgroup label="Google">
+                                    <option value="google/gemini-3-pro-preview">Gemini 3 Pro Preview</option>
+                                    <option value="google/gemini-3-flash-preview">Gemini 3 Flash Preview</option>
+                                    <option value="google/gemini-2.5-flash">Gemini 2.5 Flash</option>
+                                    <option value="google/gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
+                                </optgroup>
                             </select>
                         </div>
                         <div className="form-group">
@@ -115,35 +140,84 @@ const AddSubAgentModal: React.FC<AddSubAgentModalProps> = ({ onClose, onSave, ag
                         />
                     </div>
 
-                    {/* Skills */}
+                    {/* Skills picker */}
                     <div className="form-group">
-                        <label>Skills</label>
-                        <div className="skill-input-group" style={{ display: 'flex', gap: '0.5rem' }}>
-                            <input
-                                value={newSkill}
-                                onChange={e => setNewSkill(e.target.value)}
-                                onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addSkill())}
-                                placeholder="Type skill and press Enter or Add"
-                                className="form-input"
-                            />
-                            <button className="btn btn-secondary" onClick={addSkill}>Add</button>
-                        </div>
-                        <div className="skills-tags" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.5rem' }}>
-                            {selectedSkills.map(skill => (
-                                <span
-                                    key={skill}
-                                    className="skill-tag"
-                                    style={{ background: 'var(--glass)', padding: '0.2rem 0.6rem', borderRadius: '4px', fontSize: '0.8rem', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '4px' }}
-                                >
-                                    {skill}
-                                    <X
-                                        size={10}
-                                        style={{ cursor: 'pointer' }}
-                                        onClick={() => setSelectedSkills(selectedSkills.filter(s => s !== skill))}
+                        <label><Zap size={14} /> Skills
+                            <span style={{ color: 'var(--text-muted)', fontWeight: 400, marginLeft: '0.4rem' }}>
+                                — {selectedSkills.length} selected
+                            </span>
+                        </label>
+
+                        {availableSkills.length === 0 ? (
+                            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', margin: 0 }}>
+                                No skills enabled. Visit the <strong>Skills</strong> page and toggle skills on first.
+                            </p>
+                        ) : (
+                            <>
+                                {/* Search */}
+                                <div style={{ position: 'relative', marginBottom: '0.4rem' }}>
+                                    <Search size={13} style={{
+                                        position: 'absolute', left: '0.6rem', top: '50%',
+                                        transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none',
+                                    }} />
+                                    <input
+                                        type="text"
+                                        placeholder="Search skills…"
+                                        value={skillSearch}
+                                        onChange={e => setSkillSearch(e.target.value)}
+                                        className="form-input"
+                                        style={{ paddingLeft: '2rem' }}
                                     />
-                                </span>
-                            ))}
-                        </div>
+                                </div>
+
+                                {/* Checklist */}
+                                <div style={{
+                                    maxHeight: '200px', overflowY: 'auto',
+                                    border: '1px solid var(--border)', borderRadius: '8px',
+                                    padding: '0.25rem',
+                                }}>
+                                    {filteredSkills.length === 0 ? (
+                                        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', padding: '0.5rem', margin: 0 }}>No skills match.</p>
+                                    ) : (
+                                        filteredSkills.map(skill => {
+                                            const slug = skill.slug ?? skill.name;
+                                            const checked = selectedSkills.includes(slug);
+                                            return (
+                                                <label
+                                                    key={skill.id ?? slug}
+                                                    style={{
+                                                        display: 'flex', alignItems: 'center', gap: '0.6rem',
+                                                        padding: '0.45rem 0.5rem', borderRadius: '6px',
+                                                        cursor: 'pointer',
+                                                    }}
+                                                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--glass)')}
+                                                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={checked}
+                                                        onChange={() => toggleSkill(slug)}
+                                                        style={{ accentColor: 'var(--accent-primary)', width: '14px', height: '14px', flexShrink: 0 }}
+                                                    />
+                                                    <span style={{ fontSize: '1.1rem', lineHeight: 1, flexShrink: 0 }}>{skill.emoji || '📦'}</span>
+                                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                                        <div style={{ fontSize: '0.83rem', fontWeight: 500 }}>{skill.name}</div>
+                                                        {skill.description && (
+                                                            <div style={{
+                                                                fontSize: '0.7rem', color: 'var(--text-muted)',
+                                                                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                                                            }}>
+                                                                {skill.description}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </label>
+                                            );
+                                        })
+                                    )}
+                                </div>
+                            </>
+                        )}
                     </div>
 
                     {/* Task Description */}

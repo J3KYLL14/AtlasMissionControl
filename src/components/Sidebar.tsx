@@ -1,5 +1,6 @@
 import React from 'react';
 import { LayoutDashboard, LayoutGrid, Radio, MessageSquare, Clock, Zap, Settings, ChevronRight, Activity, FolderOpen, Compass } from 'lucide-react';
+import { useData } from '../contexts/DataContext';
 import './Sidebar.css';
 
 interface SidebarProps {
@@ -8,6 +9,8 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
+    const { agentStatus } = useData();
+    const atlasStatus = agentStatus?.status ?? 'idle';
     const navItems = [
         { id: 'overview', name: 'Overview', icon: LayoutDashboard },
         { id: 'matrix', name: 'Matrix', icon: LayoutGrid },
@@ -26,14 +29,17 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
             <div className="sidebar-agent-section">
             <div className="agent-profile">
                 <div className="agent-avatar-large">
-                    <Compass size={36} className="agent-avatar-icon" />
-                    <div className="status-dot-inner idle"></div>
+                    {agentStatus?.image
+                        ? <img src={agentStatus.image} alt="Atlas" className="agent-avatar-icon" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover' }} />
+                        : <Compass size={36} className="agent-avatar-icon" />
+                    }
+                    <div className={`status-dot-inner ${atlasStatus}`}></div>
                 </div>
                     <div className="agent-profile-info">
                         <span className="agent-display-name">Atlas</span>
                         <div className="agent-display-status">
                             <span className="dot"></span>
-                            <span className="status-label">Idle</span>
+                            <span className="status-label">{atlasStatus.charAt(0).toUpperCase() + atlasStatus.slice(1)}</span>
                         </div>
                     </div>
                     <button className="ready-status-btn">Ready for tasks</button>

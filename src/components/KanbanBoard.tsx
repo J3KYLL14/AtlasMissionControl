@@ -1,6 +1,6 @@
 import React from 'react';
 import type { KanbanTask } from '../services/mockData';
-import { Square, Zap, CheckCircle2, Archive, Calendar } from 'lucide-react';
+import { Square, PauseCircle, Zap, CheckCircle2, Archive, Calendar } from 'lucide-react';
 import './KanbanBoard.css';
 
 interface KanbanBoardProps {
@@ -12,6 +12,7 @@ interface KanbanBoardProps {
 const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks, onTaskClick, showArchive }) => {
     const columns = [
         { id: 'todo', title: 'To Do', icon: Square, color: 'todo' },
+        { id: 'paused', title: 'Paused', icon: PauseCircle, color: 'paused' },
         { id: 'inprogress', title: 'In Progress', icon: Zap, color: 'inprogress' },
         { id: 'done', title: 'Done', icon: CheckCircle2, color: 'done' },
         { id: 'archived', title: 'Archived', icon: Archive, color: 'archived' },

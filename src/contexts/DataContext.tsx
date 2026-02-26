@@ -70,6 +70,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     useEffect(() => {
         fetchData();
+        const refreshTimer = setInterval(() => {
+            fetchData();
+        }, 60000); // 60s fallback — WebSocket handles real-time updates
 
         let unmounted = false;
         let ws: WebSocket | null = null;
@@ -125,6 +128,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         return () => {
             unmounted = true;
+            clearInterval(refreshTimer);
             if (reconnectTimer) clearTimeout(reconnectTimer);
             ws?.close(1000, 'Component unmounting');
         };

@@ -2,5 +2,6 @@
   "name": "Atlas",
   "status": "working",
   "message": "Analyzing mission parameters...",
+  "image": "https://raw.githubusercontent.com/J3KYLL14/AtlasResources/main/Atlas.png",
   "subAgents": []
 }

@@ -39,8 +39,8 @@ app.use(
     cors({
         credentials: true,
         origin(origin, callback) {
-            if (!origin && env !== 'production') return callback(null, true);
-            if (origin && allowedOrigins.has(origin)) return callback(null, true);
+            if (!origin) return callback(null, true);
+            if (allowedOrigins.has(origin)) return callback(null, true);
             return callback(new Error('Origin not allowed'));
         },
     })

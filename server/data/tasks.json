@@ -1,93 +1,190 @@
 [
   {
-    "id": "t-1771465270872",
-    "date": "Feb 19, 2026",
-    "title": "new task 3",
-    "status": "todo",
-    "importance": 81,
+    "id": "d5a20174-1a1d-4e19-b6fd-44146db1057e",
+    "date": "2026-02-26T04:04:22.595Z",
+    "title": "E2E final success validation 2026-02-26T04:04:22.535Z",
+    "status": "done",
+    "assignee": "Forge",
+    "markdownFiles": [
+      "/data/.openclaw/vault/30 Do/Agent Outputs/forge/evidence/2026-02-26-e2e-final-success-validation-d5a20174.md"
+    ]
+  },
+  {
+    "id": "aec93b54-0783-4b5f-b7ce-7a3f545606fb",
+    "date": "2026-02-26T04:02:37.008Z",
+    "title": "E2E final token-fix validation 2026-02-26T04:02:36.942Z",
+    "status": "archived",
+    "assignee": "Forge"
+  },
+  {
+    "id": "0d543093-42ae-4d80-925d-0c437ce5b32d",
+    "date": "2026-02-26T04:01:43.968Z",
+    "title": "E2E handshake validation 2026-02-26T04:01:43.915Z",
+    "status": "archived",
+    "assignee": "Forge"
+  },
+  {
+    "id": "a88bcbe7-eb67-434f-9d4c-a6356775ae18",
+    "date": "2026-02-26T03:57:39.521Z",
+    "title": "E2E final trigger validation 2026-02-26T03:57:39.452Z",
+    "status": "archived",
+    "description": "Final validation task",
+    "assignee": "Forge"
+  },
+  {
+    "id": "0602ee10-5f5b-4972-91f5-c9107637e035",
+    "date": "2026-02-26T03:53:04.384Z",
+    "title": "E2E nonblocking validation 2026-02-26T03:53:04.284Z",
+    "status": "archived",
+    "assignee": "Forge"
+  },
+  {
+    "id": "06e75776-55d4-40cb-a730-f3587fae9e36",
+    "date": "2026-02-26T03:50:10.019Z",
+    "title": "E2E immediate-start validation post-fix 2026-02-26T03:50:09.945Z",
+    "status": "done",
+    "description": "Validation task post-fix",
+    "implementationPlan": "1) accept trigger 2) begin work",
+    "assignee": "Forge",
+    "markdownFiles": [
+      "/data/.openclaw/vault/30 Do/Agent Outputs/forge/evidence/06e75776-55d4-40cb-a730-f3587fae9e36-evidence.md"
+    ]
+  },
+  {
+    "id": "1400d0dd-f24b-4b75-a4e5-001c44b99776",
+    "date": "2026-02-26T03:45:47.495Z",
+    "title": "E2E immediate-start validation 2026-02-26T03:45:47.434Z",
+    "status": "archived",
+    "description": "Validation task for immediate start trigger",
+    "implementationPlan": "1) accept trigger\n2) begin work",
+    "assignee": "Forge"
+  },
+  {
+    "id": "c700b78f-4b4f-456d-9298-b0a948cf68ef",
+    "date": "2026-02-25T19:50:57.056Z",
+    "title": "Professional Portfolio Site",
+    "status": "paused",
+    "implementationPlan": "This is an implementation plan developed similar to those for coding projects. Step-by-step instructions to completion: \n\n1.",
+    "importance": 50,
     "urgency": 50,
-    "description": "",
-    "implementationPlan": "This is an implementation plan developed similar to those for coding projects. Step-by-step instructions to completion: \n\n1. ",
     "estimatedHours": 4
   },
   {
-    "id": "t-1771464592775",
-    "date": "Feb 19, 2026",
-    "title": "New task 2",
-    "status": "todo",
-    "importance": 35,
+    "id": "b383fd5b-1635-4b06-8e3e-8676239a7a46",
+    "date": "2026-02-25T19:50:18.573Z",
+    "title": "Query Forge Update",
+    "status": "paused",
+    "implementationPlan": "This is an implementation plan developed similar to those for coding projects. Step-by-step instructions to completion: \n\n1.",
+    "importance": 50,
+    "urgency": 50,
+    "estimatedHours": 4
+  },
+  {
+    "id": "21f1e0a7-a42e-4434-b221-fe70077a3008",
+    "date": "2026-02-25T12:29:04.079Z",
+    "title": "Change the home page of Mission Control",
+    "status": "paused",
+    "description": "Looking to modify the layout of the subagents, include their profile picture, the dot icon for their status as well as a short text status, maybe we can lay them out in a small grid under the Atlas agent box and the 'core metrics' box. Or we could ditch the core metrics box and just have them over to the right hand side.",
+    "implementationPlan": "This is an implementation plan developed similar to those for coding projects. Step-by-step instructions to completion: \n\n1.",
+    "importance": 38,
+    "urgency": 37,
+    "estimatedHours": 4,
+    "assignee": "Forge",
+    "markdownFiles": [
+      "/data/.openclaw/workspace/vault/2026-02-25-task-21f1e0a7-blocker-continuation.md",
+      "/data/.openclaw/workspace/vault/2026-02-25-task-21f1e0a7-blocker-heartbeat-2055.md"
+    ]
+  },
+  {
+    "id": "2026-02-25T11-26-04-test-task-for-interaction-check",
+    "title": "test task for interaction check",
+    "description": "This is a lightweight test task to verify task capture and workflow interaction are working correctly end-to-end. Success means the task is saved, visible in the task list, and can be acted on later if needed.",
+    "status": "done",
+    "importance": 20,
+    "urgency": 12,
+    "dueDate": "",
+    "implementationPlan": "Confirm the exact interaction flow being tested (capture, list, update, complete)\nCreate the test task entry and verify it saves without validation errors\nRun a quick list/show check to confirm the task appears with correct metadata\nOptionally mark status changes (in_progress/completed) to validate lifecycle transitions\nClose the test by leaving it pending or completing it after verification",
+    "assignee": "Triage",
+    "markdownFiles": [],
+    "tags": [
+      "admin"
+    ],
+    "source": "openclaw-override",
+    "date": "2026-02-25T11:26:04.779Z",
+    "readOnly": false
+  },
+  {
+    "id": "2026-02-25T05-27-19-research-best-practice-lesson-plan-template-w",
+    "title": "Research best-practice lesson plan template with Harvard Project Zero thinking skills, Visible Learning, learning intention, and success criteria",
+    "description": "Investigate and synthesize an evidence-based lesson plan template that integrates Harvard Project Zero visible thinking routines, Hattie-style Visible Learning principles, and explicit learning intentions/success criteria for classroom use. Success means producing a clear, practical template structure and reference-backed design decisions that can be used for planning at The Southport School.",
+    "status": "done",
+    "importance": 78,
+    "urgency": 56,
+    "dueDate": "",
+    "implementationPlan": "Define the scope and success requirements for the template, including year level context and required planning fields\nCollect and review authoritative sources on Harvard Project Zero routines, Visible Learning, and effective use of learning intentions/success criteria\nExtract common best-practice components and map how each framework contributes to lesson design\nDraft a consolidated lesson plan template with clearly labeled sections, teacher prompts, and student evidence checkpoints\nTest the draft template against 1-2 sample lesson contexts to verify usability and alignment\nRefine the template and produce a short implementation guide explaining how to use each section effectively",
+    "assignee": "Scout",
+    "markdownFiles": [
+      "/data/.openclaw/vault/30 Do/Agent Outputs/scout/research-brief_lesson-plan-template_pz-visible-learning.md",
+      "/data/.openclaw/vault/30 Do/Agent Outputs/scout/lesson-plan-template_pz-visible-learning.md",
+      "/data/.openclaw/vault/30 Do/Agent Outputs/scout/implementation-notes_lesson-template_pz-visible-learning.md"
+    ],
+    "tags": [
+      "planning",
+      "teaching",
+      "curriculum"
+    ],
+    "source": "openclaw-override",
+    "date": "2026-02-25T05:27:19Z",
+    "readOnly": false
+  },
+  {
+    "id": "2026-02-25T02-31-52-plan-levelkit-year9-video-series",
+    "title": "Plan Year 9 LevelKit Python video series covering required code",
+    "description": "Design a complete video lesson sequence for the Year 9 LevelKit Python unit that explicitly covers all student-facing required code in the LevelKit-Text repo. Success means each required file/function is mapped to a specific video with learning objective, coding focus, and deliverable so curriculum agents can produce consistent lesson assets.",
+    "status": "done",
+    "importance": 86,
+    "urgency": 64,
+    "dueDate": "",
+    "implementationPlan": "Audit the LevelKit-Text repository and identify all student-editable required code areas (levels, battle loops, game config, assets registries, validation workflow)\nDefine the minimum viable code competencies for Year 9 students (data structures, functions, imports, conditionals, flow control, debugging)\nMap required code components into a sequenced video arc from setup to complete playable project\nDraft a video-by-video plan including objective, files touched, core code to write, and checkpoint/test for each lesson\nAdd pacing guidance (suggested duration, in-class task, homework/extension) for each video\nReview the sequence against Australian Curriculum/QCAA expectations for Year 9 Digital Technologies and adjust for cognitive load\nPackage the final template so future curriculum planning agents can reuse it for other units",
+    "assignee": "Playbook",
+    "markdownFiles": [
+      "/data/.openclaw/vault/30 Do/Agent Outputs/playbook/levelkit-year9-video-series/series-plan.md",
+      "/data/.openclaw/vault/30 Do/Agent Outputs/playbook/levelkit-year9-video-series/episode-map.md",
+      "/data/.openclaw/vault/30 Do/Agent Outputs/playbook/levelkit-year9-video-series/production-workflow.md",
+      "/data/.openclaw/vault/30 Do/Agent Outputs/playbook/levelkit-year9-video-series/required-code-mapping.md",
+      "/data/.openclaw/vault/30 Do/Agent Outputs/playbook/memory/2026-02-25-levelkit-year9-video-series-progress.md"
+    ],
+    "tags": [
+      "teaching",
+      "planning",
+      "curriculum"
+    ],
+    "source": "openclaw-override",
+    "date": "2026-02-25T02:31:52.000Z",
+    "readOnly": false
+  },
+  {
+    "id": "2026-02-24T22-55-53-research-unit-plan-template",
+    "title": "Research best practices and develop unit plan template for agents",
+    "description": "Research evidence-based best practices for unit planning (backward design/UbD, Marzano, Hattie, QCAA frameworks) and develop a comprehensive unit plan template that agents can fill out when tasked with curriculum planning work. The template should be structured, consistent, and aligned to Queensland curriculum requirements.",
+    "status": "done",
+    "importance": 78,
     "urgency": 55,
-    "description": "",
-    "implementationPlan": "This is an implementation plan developed similar to those for coding projects. Step-by-step instructions to completion: \n\n1. ",
-    "estimatedHours": 4
-  },
-  {
-    "id": "t-1771461059379",
-    "date": "Feb 19, 2026",
-    "title": "New Task",
-    "status": "todo",
-    "importance": 67.5,
-    "urgency": 47.5,
-    "description": "",
-    "implementationPlan": "This is an implementation plan developed similar to those for coding projects. Step-by-step instructions to completion: \n\n1. ",
-    "estimatedHours": 4
-  },
-  {
-    "id": "t1",
-    "title": "Fix PDF page breaks",
-    "date": "Jan 27, 2026",
-    "status": "todo",
-    "importance": 80,
-    "urgency": 40,
-    "dueDate": "2026-02-20T17:00:00Z",
-    "estimatedHours": 4
-  },
-  {
-    "id": "t2",
-    "title": "Add charts to reports",
-    "date": "Jan 27, 2026",
-    "status": "todo",
-    "importance": 40,
-    "urgency": 30,
-    "estimatedHours": 6
-  },
-  {
-    "id": "t3",
-    "title": "X API monitoring access",
-    "date": "Jan 27, 2026",
-    "status": "todo",
-    "importance": 95,
-    "urgency": 50,
-    "estimatedHours": 2,
-    "dueDate": "2026-06-22T13:00"
-  },
-  {
-    "id": "t4",
-    "title": "X expert monitoring role",
-    "date": "Jan 27, 2026",
-    "status": "inprogress",
-    "importance": 62.5,
-    "urgency": 85,
-    "dueDate": "2026-02-21T09:00",
-    "estimatedHours": 12
-  },
-  {
-    "id": "t5",
-    "title": "Metrics tracking system",
-    "date": "Jan 27, 2026",
-    "status": "inprogress",
-    "importance": 40,
-    "urgency": 20,
-    "estimatedHours": 8,
-    "dueDate": "2026-12-12T13:00"
-  },
-  {
-    "id": "t9",
-    "title": "Overdue infrastructure patch",
-    "date": "Feb 10, 2026",
-    "status": "inprogress",
-    "importance": 95,
-    "urgency": 50,
-    "dueDate": "2026-02-10T12:00:00Z"
+    "dueDate": "",
+    "implementationPlan": "Research best-practice unit planning frameworks (UbD/Wiggins & McTighe, Marzano, Hattie's Visible Learning, QCAA unit planning guidelines)\nIdentify common components across frameworks: learning goals, backward design stages, assessment alignment, differentiation, pedagogy\nDraft a unit plan template in Markdown that agents can populate, with clear section headings and guidance prompts\nAlign template fields to QCAA requirements (general capabilities, cross-curriculum priorities, Australian Curriculum standards)\nReview template against Ben's existing Year 8 Digital Solutions planning needs for practical fit\nSave template to workspace and create Mission Control task for Atlas to review and iterate",
+    "assignee": "Scout",
+    "markdownFiles": [
+      "/data/.openclaw/vault/30 Do/Projects/Atlas-OpenClaw/teaching/templates/UNIT-PLAN-TEMPLATE-QCAA.md",
+      "/data/.openclaw/vault/30 Do/Projects/Atlas-OpenClaw/hod-admin/curriculum/UNIT-PLAN-TEMPLATE-RESEARCH-NOTES.md",
+      "/data/.openclaw/vault/30 Do/Projects/Atlas-OpenClaw/mission-control/review-queue/2026-02-24-unit-plan-template-review.md"
+    ],
+    "tags": [
+      "curriculum",
+      "planning",
+      "hod"
+    ],
+    "source": "openclaw-override",
+    "date": "2026-02-24T22:55:53.000Z",
+    "readOnly": false
   }
 ]

@@ -1,3 +1,330 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   ORG CHART
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.org-chart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem 0 2rem;
+    overflow-x: auto;
+    width: 100%;
+}
+
+/* ── CEO Row ── */
+.org-ceo-row {
+    display: flex;
+    justify-content: center;
+}
+
+.org-ceo-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.75rem 2.25rem 1.25rem;
+    background: var(--bg-card);
+    border: 1px solid rgba(20, 184, 166, 0.3);
+    border-radius: 22px;
+    text-align: center;
+    transition: var(--transition);
+    min-width: 200px;
+    box-shadow: 0 0 40px rgba(20, 184, 166, 0.06), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.org-ceo-card:hover {
+    background: var(--bg-card-hover);
+    border-color: rgba(20, 184, 166, 0.55);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 36px rgba(20, 184, 166, 0.15);
+}
+
+/* Gold crown badge */
+.org-ceo-crown-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+}
+
+.org-ceo-avatar-wrap {
+    position: relative;
+    width: 88px;
+    height: 88px;
+    margin-bottom: 0.15rem;
+}
+
+.org-ceo-avatar-img {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(20, 184, 166, 0.35);
+}
+
+.org-ceo-avatar-initials {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.02em;
+}
+
+.org-ceo-status-dot {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid var(--bg-card);
+}
+
+.org-ceo-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.org-ceo-role {
+    font-size: 0.71rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent-primary);
+}
+
+/* ── Vertical stem from Atlas ── */
+.org-stem-v {
+    width: 2px;
+    height: 28px;
+    background: linear-gradient(to bottom, rgba(20, 184, 166, 0.45), rgba(20, 184, 166, 0.1));
+    flex-shrink: 0;
+}
+
+/* ── Department Row ── */
+.org-dept-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    position: relative;
+    width: 100%;
+    max-width: 1260px;
+    padding-top: 0;
+}
+
+/* Horizontal bar across all department columns */
+.org-dept-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: calc(100% / 12);
+    right: calc(100% / 12);
+    height: 2px;
+    background: linear-gradient(
+        to right,
+        transparent,
+        rgba(20, 184, 166, 0.22) 10%,
+        rgba(20, 184, 166, 0.22) 90%,
+        transparent
+    );
+}
+
+/* ── Department Column ── */
+.org-dept-col {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Short vertical drop from horizontal bar to dept label */
+.org-dept-stem-v {
+    width: 2px;
+    height: 22px;
+    background: linear-gradient(to bottom, rgba(20, 184, 166, 0.22), rgba(20, 184, 166, 0.06));
+    flex-shrink: 0;
+}
+
+/* ── Department Label ── */
+.org-dept-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.28rem 0.55rem;
+    border: 1px solid;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.02);
+    text-align: center;
+    width: 100%;
+    line-height: 1.35;
+    word-break: break-word;
+    hyphens: auto;
+}
+
+/* ── Agent Cards Under Each Dept ── */
+.org-dept-agents {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    width: 100%;
+    margin-top: 0.15rem;
+}
+
+/* ── Org Agent Card (horizontal mini) ── */
+.org-agent-card {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.55rem 0.65rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: left;
+    transition: var(--transition);
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.org-agent-card:hover {
+    background: var(--bg-card-hover);
+    border-color: rgba(20, 184, 166, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+}
+
+/* Undeployed agents — shown as ghost placeholders */
+.org-agent-card--phantom {
+    opacity: 0.32;
+    cursor: default;
+    pointer-events: none;
+    border-style: dashed;
+}
+
+.org-agent-avatar-wrap {
+    position: relative;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+}
+
+.org-agent-avatar-img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border);
+}
+
+.org-agent-avatar-initials {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.org-agent-status-dot {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    border: 1.5px solid var(--bg-card);
+}
+
+.org-agent-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.org-agent-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.org-agent-role {
+    font-size: 0.66rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.org-agent-delete {
+    flex-shrink: 0;
+    opacity: 0;
+    padding: 0.25rem;
+    border-radius: 6px;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.06);
+    display: flex;
+    align-items: center;
+    transition: opacity 0.2s;
+}
+
+.org-agent-card:hover .org-agent-delete {
+    opacity: 1;
+}
+
+/* ── Extra / Unassigned Agents Section ── */
+.org-extra-section {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    width: 100%;
+}
+
+.org-extra-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LEGACY FLAT GRID (kept for reuse / overflow section)
+   ══════════════════════════════════════════════════════════════════════════ */
+
 /* ── Agent card grid ─────────────────────────────────────────────────────── */
 .agents-card-grid {
     display: grid;

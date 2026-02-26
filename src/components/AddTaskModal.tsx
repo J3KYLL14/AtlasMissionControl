@@ -10,7 +10,7 @@ interface AddTaskModalProps {
 
 const AddTaskModal: React.FC<AddTaskModalProps> = ({ onClose, onSave }) => {
     const [title, setTitle] = useState('');
-    const [status, setStatus] = useState<'todo' | 'inprogress'>('todo');
+    const [status, setStatus] = useState<'todo' | 'paused' | 'inprogress'>('todo');
     const [importance, setImportance] = useState(50);
     const [urgency, setUrgency] = useState(50);
     const [dueDate, setDueDate] = useState('');
@@ -67,10 +67,11 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ onClose, onSave }) => {
                             <label>Initial Status</label>
                             <select
                                 value={status}
-                                onChange={e => setStatus(e.target.value as 'todo' | 'inprogress')}
+                                onChange={e => setStatus(e.target.value as 'todo' | 'paused' | 'inprogress')}
                                 className="form-select"
                             >
                                 <option value="todo">To Do</option>
+                                <option value="paused">Paused</option>
                                 <option value="inprogress">In Progress</option>
                             </select>
                         </div>

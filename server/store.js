@@ -7,6 +7,8 @@ const __dirname = path.dirname(__filename);
 
 const DATA_DIR = path.join(__dirname, 'data');
 const SKILLS_DIR = path.join(process.env.HOME || process.env.USERPROFILE, 'clawd', 'skills');
+const WORKSPACE_SKILLS_DIR = '/data/.openclaw/workspace/skills';
+const SKILLS_CATALOG_PATH = '/data/.openclaw/skills-catalog.json';
 
 // Ensure data directory exists
 if (!fs.existsSync(DATA_DIR)) {
@@ -57,6 +59,21 @@ const INITIAL_DATA = {
 };
 
 export { DATA_DIR, SKILLS_DIR };
+
+const ENABLED_SKILLS_PATH = path.join(DATA_DIR, 'enabled-skills.json');
+
+export const readEnabledSkills = () => {
+    try { return JSON.parse(fs.readFileSync(ENABLED_SKILLS_PATH, 'utf-8')); } catch { return []; }
+};
+
+export const setSkillEnabled = (slug, enabled) => {
+    const current = readEnabledSkills();
+    const updated = enabled
+        ? [...new Set([...current, slug])]
+        : current.filter(s => s !== slug);
+    fs.writeFileSync(ENABLED_SKILLS_PATH, JSON.stringify(updated, null, 2), 'utf-8');
+    return updated;
+};
 
 const getFilePath = (key) => path.join(DATA_DIR, `${key}.json`);
 const SKILL_ID_REGEX = /^[a-z0-9][a-z0-9-_]{0,63}$/i;
@@ -127,42 +144,83 @@ export const writeData = (key, data) => {
 
 // --- Skill Management (Directory based) ---
 
-export const readSkills = () => {
-    if (!fs.existsSync(SKILLS_DIR)) return [];
+function parseSkillFrontmatter(content) {
+    const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
+    if (!fmMatch) return { name: 'Unknown', description: '', emoji: '📦', body: content, homepage: '', userInvocable: false };
+    const fm = fmMatch[1];
+    const body = fmMatch[2].trim();
+    const nameMatch = fm.match(/^name:\s*(.+?)$/m);
+    const descMatch = fm.match(/^description:\s*([\s\S]+?)(?=\n[a-zA-Z]|\n---|$)/m);
+    const homepageMatch = fm.match(/^homepage:\s*(.+?)$/m);
+    const emojiMatch = fm.match(/"emoji":\s*"([^"]+)"/);
+    const description = descMatch ? descMatch[1].trim().replace(/^["']|["']$/g, '').trim() : '';
+    return {
+        name: nameMatch ? nameMatch[1].trim() : 'Unknown',
+        description,
+        homepage: homepageMatch ? homepageMatch[1].trim() : '',
+        emoji: emojiMatch ? emojiMatch[1] : '📦',
+        body,
+        userInvocable: /^user-invocable:\s*true/m.test(fm),
+    };
+}
 
+function readWorkspaceSkills() {
+    const skills = [];
     try {
-        const folders = fs.readdirSync(SKILLS_DIR);
-        return folders.map(folder => {
-            const skillPath = path.join(SKILLS_DIR, folder);
-            if (!fs.statSync(skillPath).isDirectory()) return null;
-
-            const skillMdPath = path.join(skillPath, 'SKILL.md');
-            let content = '';
-            let metadata = { name: folder, description: '' };
-
-            if (fs.existsSync(skillMdPath)) {
-                content = fs.readFileSync(skillMdPath, 'utf-8');
-                // Basic frontmatter parser
-                const match = content.match(/^---\n([\s\S]*?)\n---/);
-                if (match) {
-                    const yaml = match[1];
-                    yaml.split('\n').forEach(line => {
-                        const [key, ...val] = line.split(':');
-                        if (key && val) metadata[key.trim()] = val.join(':').trim();
-                    });
-                }
+        const entries = fs.readdirSync(WORKSPACE_SKILLS_DIR, { withFileTypes: true });
+        for (const entry of entries) {
+            if (!entry.isDirectory()) continue;
+            const slug = entry.name;
+            const mdPath = path.join(WORKSPACE_SKILLS_DIR, slug, 'SKILL.md');
+            try {
+                const content = fs.readFileSync(mdPath, 'utf-8');
+                const parsed = parseSkillFrontmatter(content);
+                skills.push({ id: `workspace-${slug}`, slug, source: 'workspace', ...parsed, content });
+            } catch {
+                skills.push({ id: `workspace-${slug}`, slug, name: slug, description: '', emoji: '📦', body: '', homepage: '', userInvocable: false, source: 'workspace', content: '' });
             }
+        }
+    } catch { /* dir not found */ }
+    return skills;
+}
 
-            return {
-                id: folder,
-                ...metadata,
-                content
-            };
-        }).filter(Boolean);
-    } catch (e) {
-        console.error("Error reading skills", e);
-        return [];
+function readCatalogSkills() {
+    try {
+        const data = fs.readFileSync(SKILLS_CATALOG_PATH, 'utf-8');
+        const catalog = JSON.parse(data);
+        return catalog.map(s => ({ ...s, id: `catalog-${s.slug}`, source: 'openclaw-bundled', content: s.body || '' }));
+    } catch { return []; }
+}
+
+export const readSkills = () => {
+    const userSkills = [];
+    if (fs.existsSync(SKILLS_DIR)) {
+        try {
+            const folders = fs.readdirSync(SKILLS_DIR);
+            for (const folder of folders) {
+                const skillPath = path.join(SKILLS_DIR, folder);
+                if (!fs.statSync(skillPath).isDirectory()) continue;
+                const skillMdPath = path.join(skillPath, 'SKILL.md');
+                let content = '';
+                let parsed = { name: folder, description: '', emoji: '📦', body: '', homepage: '', userInvocable: false };
+                if (fs.existsSync(skillMdPath)) {
+                    content = fs.readFileSync(skillMdPath, 'utf-8');
+                    parsed = { ...parsed, ...parseSkillFrontmatter(content) };
+                }
+                userSkills.push({ id: folder, slug: folder, source: 'user-defined', ...parsed, content });
+            }
+        } catch (e) {
+            console.error('Error reading user skills', e);
+        }
     }
+    const workspaceSkills = readWorkspaceSkills();
+    const catalogSkills = readCatalogSkills();
+    const enabledSlugs = readEnabledSkills();
+    const all = [...userSkills, ...workspaceSkills, ...catalogSkills];
+    return all.map(s => ({
+        ...s,
+        enabled: s.source === 'workspace' || s.source === 'user-defined' || enabledSlugs.includes(s.slug),
+    }));
 };
 
 export const writeSkill = (skill) => {

@@ -10,7 +10,7 @@ import { useData } from '../contexts/DataContext';
 import { api } from '../services/api';
 
 const EisenhowerMatrix: React.FC = () => {
-    const { tasks, refreshData } = useData();
+    const { tasks, subAgents, refreshData } = useData();
     const activeTasks = tasks.filter(t => t.status === 'todo' || t.status === 'inprogress');
     const containerRef = useRef<HTMLDivElement>(null);
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -33,6 +33,10 @@ const EisenhowerMatrix: React.FC = () => {
         setShowAddModal(false);
         refreshData();
     };
+
+    const assigneeOptions = Array.from(
+        new Set((subAgents || []).map((a) => a.name).filter(Boolean))
+    ).sort((a, b) => a.localeCompare(b));
 
     useEffect(() => {
         if (!containerRef.current) return;
@@ -207,6 +211,7 @@ const EisenhowerMatrix: React.FC = () => {
             {activeTask && (
                 <TaskModal
                     task={activeTask}
+                    assigneeOptions={assigneeOptions}
                     onClose={() => setActiveTask(null)}
                     onSave={handleTaskUpdate}
                     onDelete={handleTaskDelete}

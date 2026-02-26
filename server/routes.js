@@ -1,6 +1,6 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { readFileSync, existsSync, readdirSync, statSync, writeFileSync, renameSync } from 'fs';
+import { readFileSync, existsSync, readdirSync, statSync, writeFileSync, renameSync, mkdirSync } from 'fs';
 import path from 'path';
 import { readData, writeData, readSkills, writeSkill, deleteSkill, setSkillEnabled } from './store.js';
 import { authenticate, authorize } from './auth.js';
@@ -12,6 +12,9 @@ const requireAdmin = authorize('admin');
 const requireAdminOrAgent = authorize('admin', 'agent');
 const OPENCLAW_TASKS_DIR = process.env.OPENCLAW_TASKS_DIR || '/data/.openclaw/workspace/tasks';
 const OPENCLAW_CONFIG_PATH = process.env.OPENCLAW_CONFIG || '/data/.openclaw/openclaw.json';
+const OPENCLAW_VAULT_PATH = process.env.OPENCLAW_VAULT_PATH || '/data/.openclaw/vault';
+const VAULT_INDEX_PATH = path.join(OPENCLAW_VAULT_PATH, '99 System', 'Meta', 'VAULT_INDEX.md');
+const VAULT_INDEX_MAX_AGE_MS = 60 * 60 * 1000; // 1 hour cache
 
 const paginate = (arr, query) => {
     const { page, limit: limitStr } = query;
@@ -273,6 +276,120 @@ const listMarkdownFiles = (workspacePath, limit = 200) => {
         totalFound: found.length,
         files: found.slice(0, maxEntries),
     };
+};
+
+const VAULT_FOLDER_DESCRIPTIONS = {
+    '00': 'Home — dashboards, MOCs, reviews',
+    '01': 'Intake — quick notes, meeting notes, agent memory',
+    '10': 'Learn — sources, highlights, annotations',
+    '20': 'Think — concepts, frameworks, evergreen notes',
+    '30': 'Do — projects, agent outputs, builds, teaching, writing',
+    '40': 'People — collaborators, students, organisations',
+    '50': 'Reference — templates, rubrics, policies, snippets',
+    '90': 'Archive — retired notes, old projects',
+    '99': 'System — meta, attachments, canvas',
+};
+
+const buildVaultFileId = (relPath) => {
+    const parts = relPath.replace(/\.md$/i, '').split('/');
+    const segments = [];
+    for (const part of parts) {
+        const numMatch = part.match(/^(\d{2})\s+/);
+        if (numMatch) {
+            segments.push(numMatch[1]);
+        } else {
+            const slug = part.replace(/\s+/g, '').replace(/[^a-zA-Z0-9_-]/g, '');
+            if (slug) segments.push(slug);
+        }
+    }
+    return segments.filter((s, i) => i === 0 || s !== segments[i - 1]).join('-');
+};
+
+const buildVaultIndex = (vaultPath) => {
+    const skipDirs = new Set(['.git', 'node_modules', '.obsidian', '.stfolder']);
+    const files = [];
+    const stack = [vaultPath];
+    let scanned = 0;
+    while (stack.length > 0 && scanned < 20000 && files.length < 2000) {
+        const current = stack.pop();
+        let entries = [];
+        try { entries = readdirSync(current, { withFileTypes: true }); } catch { continue; }
+        for (const entry of entries) {
+            scanned++;
+            if (skipDirs.has(entry.name)) continue;
+            const full = path.join(current, entry.name);
+            if (entry.isDirectory()) { stack.push(full); continue; }
+            if (!entry.isFile() || !entry.name.toLowerCase().endsWith('.md')) continue;
+            try {
+                const st = statSync(full);
+                const rel = path.relative(vaultPath, full);
+                files.push({
+                    rel,
+                    id: buildVaultFileId(rel),
+                    name: path.basename(entry.name, '.md'),
+                    sizeKb: Math.round(st.size / 102.4) / 10,
+                    mtime: st.mtime.toISOString().slice(0, 10),
+                });
+            } catch { /* skip */ }
+        }
+    }
+
+    // Group by top-level folder
+    const groups = new Map();
+    for (const f of files) {
+        const top = f.rel.split('/')[0];
+        if (!groups.has(top)) groups.set(top, []);
+        groups.get(top).push(f);
+    }
+
+    const now = new Date().toISOString().slice(0, 16).replace('T', ' ');
+    const lines = [
+        '# Vault Index',
+        '',
+        `> Generated: ${now} UTC — ${files.length} files`,
+        '> **Agents**: read this index first, then fetch only the specific files you need.',
+        '> File IDs: `{folder#}-{SubfolderName}-{FileName}`',
+        '',
+        '## Folder Map',
+        '',
+        '| # | Folder | Purpose |',
+        '|---|--------|---------|',
+    ];
+    for (const [num, desc] of Object.entries(VAULT_FOLDER_DESCRIPTIONS)) {
+        const [folder, purpose] = desc.split(' — ');
+        lines.push(`| \`${num}\` | ${folder} | ${purpose} |`);
+    }
+    lines.push('');
+
+    for (const [folder, folderFiles] of [...groups.entries()].sort()) {
+        const num = (folder.match(/^(\d{2})/) || [])[1] || '??';
+        const desc = VAULT_FOLDER_DESCRIPTIONS[num] || folder;
+        lines.push(`## ${folder}`);
+        lines.push(`_${desc}_`);
+        lines.push('');
+
+        // Sub-group by immediate subfolder
+        const subgroups = new Map();
+        for (const f of folderFiles) {
+            const parts = f.rel.split('/');
+            const sub = parts.length > 2 ? parts[1] : '(root)';
+            if (!subgroups.has(sub)) subgroups.set(sub, []);
+            subgroups.get(sub).push(f);
+        }
+        for (const [sub, subFiles] of [...subgroups.entries()].sort()) {
+            if (sub !== '(root)') lines.push(`### ${sub}`);
+            lines.push('');
+            lines.push('| ID | Name | Modified |');
+            lines.push('|----|------|----------|');
+            for (const f of subFiles) {
+                lines.push(`| \`${f.id}\` | ${f.name} | ${f.mtime} |`);
+            }
+            lines.push('');
+        }
+    }
+    lines.push('---');
+    lines.push(`_${files.length} files — regenerate: \`GET /api/vault/index?regenerate=1\`_`);
+    return lines.join('\n');
 };
 
 const readOpenClawTasks = () => {
@@ -657,6 +774,50 @@ export const createRoutes = (broadcast) => {
             totalFound,
             files,
         });
+    });
+
+    // GET /api/vault/index — returns a compact TOC of all vault markdown files.
+    // Agents should call this instead of listing all markdown files on startup.
+    // ?regenerate=1  force rebuild (otherwise served from cache up to 1h)
+    // ?format=text   return raw markdown instead of JSON
+    router.get('/vault/index', authenticate, (req, res) => {
+        if (!existsSync(OPENCLAW_VAULT_PATH)) {
+            return res.status(404).json({ error: 'Vault path not found', path: OPENCLAW_VAULT_PATH });
+        }
+        const forceRegen = asString(req.query.regenerate, 4) === '1';
+        let content = null;
+        let generatedAt = null;
+
+        // Try to serve from cache
+        if (!forceRegen && existsSync(VAULT_INDEX_PATH)) {
+            try {
+                const st = statSync(VAULT_INDEX_PATH);
+                if (Date.now() - st.mtimeMs < VAULT_INDEX_MAX_AGE_MS) {
+                    content = readFileSync(VAULT_INDEX_PATH, 'utf-8');
+                    generatedAt = st.mtime.toISOString();
+                }
+            } catch { /* fall through to regenerate */ }
+        }
+
+        // Regenerate if needed
+        if (!content) {
+            content = buildVaultIndex(OPENCLAW_VAULT_PATH);
+            generatedAt = new Date().toISOString();
+            try {
+                const dir = path.dirname(VAULT_INDEX_PATH);
+                if (!existsSync(dir)) {
+                    mkdirSync(dir, { recursive: true });
+                }
+                writeFileSync(VAULT_INDEX_PATH, content, 'utf-8');
+            } catch { /* best-effort cache write */ }
+        }
+
+        const format = asString(req.query.format, 8);
+        if (format === 'text' || format === 'md') {
+            res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+            return res.send(content);
+        }
+        return res.json({ generatedAt, path: VAULT_INDEX_PATH, content });
     });
 
     router.post('/subAgents', authenticate, requireAdmin, (req, res) => {

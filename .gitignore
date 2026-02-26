@@ -26,3 +26,6 @@ dist-ssr
 # Runtime data
 server/data/*.bak
 server/data/sessions.json
+
+# Secrets — never commit
+.env

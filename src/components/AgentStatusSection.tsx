@@ -17,12 +17,16 @@ const AgentStatusSection: React.FC<AgentStatusSectionProps> = ({ agent }) => {
                 <div className="agent-left-col">
                     <div className="agent-main-info">
                         <div className="agent-avatar">
-                            <FlaskConical size={32} />
+                            {agent.image ? (
+                                <img src={agent.image} alt={agent.name} className="agent-avatar-img" />
+                            ) : (
+                                <FlaskConical size={32} />
+                            )}
                             <div className={`status-dot ${agent.status}`}></div>
                         </div>
                         <div className="agent-details">
                             <div className="agent-header">
-                                <h3 className="agent-name">Atlas</h3>
+                                <h3 className="agent-name">{agent.name || 'Atlas'}</h3>
                                 <div className="status-badge-inline">
                                     <span className={`status-dot-mini ${agent.status}`}></span>
                                     <span className={`status-text ${agent.status}`}>{agent.status.toUpperCase()}</span>
